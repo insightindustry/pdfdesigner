@@ -1,0 +1,14 @@
+**PDFDesigner** applies the principle of `semantic versioning`_. In general
+terms, this means:
+
+#. Versions are expressed as ``MAJOR.MINOR.PATCH``.
+#. ``MAJOR`` is incremented when incompatible API changes are made.
+#. ``MINOR`` is incremented when new functionality is introduced in a
+   backwards-compatible manner.
+#. ``PATCH`` is incremented when backwards-compatible bug-fixes are introduced.
+
+.. seealso::
+
+    http://semver.org/
+
+.. _`semantic versioning`: http://semver.org/

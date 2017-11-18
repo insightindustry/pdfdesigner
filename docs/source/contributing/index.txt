@@ -1,0 +1,23 @@
+#############################
+Contributing to PDFDesigner
+#############################
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 2
+   :caption: Contents
+   :hidden:
+
+   Style Guide <style_guide>
+
+.. contents:: Contents
+  :depth: 2
+  :backlinks: entry
+
+**************
+Heading 2
+**************
+
+.. todo::
+
+  Write contributor guidance.

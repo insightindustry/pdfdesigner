@@ -1,0 +1,9 @@
+#################
+Getting Started
+#################
+
+.. include:: ./shared/installation.txt
+
+.. todo::
+
+  Write Getting Started instructions with examples.
