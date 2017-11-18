@@ -29,7 +29,7 @@ pattern:
   import pdfdesigner
   from pdfdesigner.defaults import DEFAULT_SETTINGS, DEFAULT_STYLES, DEFAULT_TEMPLATES, DEFAULT_COLORS
   from pdfdesigner.templates import SectionTemplate, PageTemplate, DesignTargetTemplate
-  from pdfdesigner.design.elements import Section, Story, Page, DesignTarget
+  from pdfdesigner.design.layout import Section, Story, Page, DesignTarget
   from pdfdesigner.design.content import Paragraph, Table, Image
   from pdfdesigner.design.units import POINT, PICA, MM, CM, INCH
 
@@ -44,7 +44,7 @@ templates
 
   * :term:`Section Templates <Section Template>`
   * :term:`Page Templates <Page Template>`
-  * :term:`ContentTargetTemplate <Design Target Template>`
+  * :term:`DesignTargetTemplate <Design Target Template>`
 
   which are used to simplify design.
 
@@ -52,7 +52,7 @@ design
   This is the "workhorse" sub-module that conceptually relates to
   design-focused issues. It is divided into several further sub-modules:
 
-  elements
+  layout
     Contains classes that are used to instantiate the "building blocks" of your
     PDF that make up its layout:
 
