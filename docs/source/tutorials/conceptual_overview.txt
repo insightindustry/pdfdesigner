@@ -10,19 +10,19 @@ Conceptual Overview
 using Python. It is designed as an API that extends the `ReportLab`_ library.
 
 *****************
-Module Hierarchy
+Package Hierarchy
 *****************
 
 .. contents::
   :local:
 
 **PDFDesigner** is a complicated library that relies on and exports a variety of
-modules, sub-modules, classes, and functions.
+packages, sub-packages, modules, classes, and functions.
 
-The initial module serves as a top-level namespace and should be directly
+The initial package serves as a top-level namespace and should be directly
 imported into your code. Additional classes and functions should be imported
-from various submodules. The code block below indicates a recommended ``import``
-pattern:
+from various submodules *as needed*. The code block below indicates a
+recommended ``import`` pattern:
 
 .. code-block:: python
 
@@ -33,8 +33,8 @@ pattern:
   from pdfdesigner.design.content import Paragraph, Table, Image
   from pdfdesigner.design.units import POINT, PICA, MM, CM, INCH
 
-The code block above should give you a reasonable idea of the key submodules
-in the **PDFDesigner**:
+The code block above should give you a reasonable idea of the key packages and
+modules in the **PDFDesigner**:
 
 defaults
   Contains constants that are used as default settings in assembling a PDF.
@@ -49,12 +49,12 @@ templates
   which are used to simplify design.
 
 design
-  This is the "workhorse" sub-module that conceptually relates to
+  This is the "workhorse" sub-package that conceptually relates to
   design-focused issues. It is divided into several further sub-modules:
 
   layout
-    Contains classes that are used to instantiate the "building blocks" of your
-    PDF that make up its layout:
+    Contains modules and classes that are used to instantiate the "building
+    blocks" of your PDF that make up its layout:
 
     * :term:`Sections <Section>`
     * :term:`Pages <Page>`
@@ -62,7 +62,7 @@ design
     * :term:`Design Targets <Design Target>`
 
   content
-    Contains classes that are used to instantiate the
+    Contains modules and classes that are used to instantiate the
     :term:`Content Elements <Content Element>` that are drawn in your PDF.
 
   units
@@ -71,9 +71,10 @@ design
 pdfdesigner
 ============
 
-The ``pdfdesigner`` namespace exposes a variety of utility functions, some of
-which are aliases for methods applied to the **PDFDesigner**
-:term:`singleton <Singleton>` instance exposed at ``pdfdesigner.Instance()``.
+The ``pdfdesigner`` package represents a namespace, which in turn exposes a
+variety of utility functions, some of which are aliases for methods applied to
+the internal **PDFDesigner** :term:`singleton <Singleton>` instance exposed at
+``pdfdesigner.Instance()``.
 
 pdfdesigner.Instance()
 -----------------------

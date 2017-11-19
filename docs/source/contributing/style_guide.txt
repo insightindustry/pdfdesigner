@@ -9,6 +9,38 @@ Style Guide
 
 .. contents:: Contents:
 
+
+.. sidebar:: What makes an API idiomatic?
+
+  One of my favorite ways of thinking about idiomatic design comes from a `talk
+  given by Luciano Ramalho at Pycon 2016`_ where he listed traits of a Pythonic
+  API as being:
+
+  * don't force [the user] to write boilerplate code
+  * provide ready to use functions and objects
+  * don't force [the user] to subclass unless there's a *very good* reason
+  * include the batteries: make easy tasks easy
+  * are simple to use but not simplistic: make hard tasks possible
+  * leverage the Python data model to:
+
+    * provide objects that behave as you expect
+    * avoid boilerplate through introspection (reflection) and metaprogramming.
+
+Design Philosophy
+==================
+
+**PDFDesigner** is meant to be a "beautiful" and "usable" library. That means
+that it should offer an idiomatic API that:
+
+* works out of the box as intended,
+* minimizes "bootstrapping" to produce meaningful output, and
+* does not force users to understand how it does what it does.
+
+In other words:
+
+.. pull-quote::
+  Users should simply be able to drive the car without looking at the engine.
+
 Basic Conventions
 ==================
 
@@ -151,3 +183,4 @@ Docstrings
 .. _`ReadTheDocs`: https://readthedocs.org
 .. _`reStructuredText`: http://www.sphinx-doc.org/en/stable/rest.html
 .. _`Documentation Style Guide`: http://documentation-style-guide-sphinx.readthedocs.io/en/latest/style-guide.html
+.. _`talk given by Luciano Ramalho at PyCon 2016`: https://www.youtube.com/watch?v=k55d3ZUF3ZQ
