@@ -32,6 +32,7 @@ with logic and functionality similar to traditional DTP applications.
    Tutorials <tutorials/index>
    Contributing to PDFDesigner <contributing/index>
 
+   Reference <reference/index>
    Glossary <glossary>
 
 .. contents:: Contents

@@ -1,0 +1,19 @@
+#######################################
+PDFDesigner API Reference
+#######################################
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 2
+   :caption: Contents
+
+   Conceptual Overview <../contributing/conceptual_overview>
+   pdfdesigner <self>
+   pdfdesigner.exceptions <exceptions>
+   pdfdesigner.defaults <defaults>
+   pdfdesigner.design <design/index>
+   pdfdesigner.templates <templates>
+   Glossary <../glossary>
+
+.. automodule:: pdfdesigner
+  :members:
