@@ -1,15 +1,181 @@
-.. PDFDesigner documentation master file, created by
-   sphinx-quickstart on Thu Nov 16 21:08:34 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+#######################################
+PDFDesigner - Beautiful PDFs in Python
+#######################################
 
-Welcome to PDFDesigner's documentation!
-=======================================
+.. |strong| raw:: html
+
+  <strong>
+
+.. |/strong| raw:: html
+
+  </strong>
+
+.. sidebar:: Version Compatability
+
+    **PDFDesigner** is only compatible with `Python 3.6+`_. If you're still using
+    an older version of Python for your project, then I strongly recommend you
+    `make your project Python 2/3 compatible`_.
+
+**PDFDesigner** is a Python library that binds the excellent `ReportLab`_
+library and exposes a set of APIs to simplify the creation of complicated PDFs
+with logic and functionality similar to traditional DTP applications.
 
 .. toctree::
+   :titlesonly:
+   :hidden:
    :maxdepth: 2
    :caption: Contents:
 
+   Home <self>
+   .. contents:: :local:
+   Getting Started <getting_started>
+   Tutorials <tutorials/index>
+   Contributing to PDFDesigner <contributing/index>
+
+   Reference <reference/index>
+   Glossary <glossary>
+
+.. contents:: Contents
+   :depth: 2
+   :backlinks: entry
+
+*****************
+Why PDFDesigner?
+*****************
+
+.. topic:: Why do we need **PDFDesigner**? Aren't `ReportLab`_ and `PLATYPUS`_ good enough?
+
+  Sure, `ReportLab`_ and `PLATYPUS`_ are incredibly powerful tools for the
+  programmatic generation of PDFs in Python. They're so powerful, that over
+  the years they've basically become the community and industry standard.
+
+  For simple (read: uncomplicated) documents, they're easy enough to use. But
+  when we're trying to implement design-heavy PDF generation their logic and
+  syntax become cumbersome. Having used them to implement some very
+  design-heavy PDF generation, I tend to consider them "fiddly".
+
+  For one thing, the layout engine `PLATYPUS`_ works by iterating over lists
+  of :term:`Design Targets <Design Target>` (called ``Frames`` in their
+  parlance) and within each frame over lists of :term:`Flowable Content`
+  (called ``Flowables`` in their parlance). If you have a complicated design,
+  that may lead to the creation of very long, hard-to-write, hard-to-read
+  functions or classes that do lots of ``.append(my_flowable)`` or
+  ``.extend(my_frames)``.
+
+  Applying dynamic or conditional logic to frames or content (e.g. "shrink
+  this frame if X" or "draw this image if Y") has a complicated syntax that is
+  hard to understand and hard to test for. Complicated conditional logic is
+  likely to require complex rules of inheritance to assemble.
+
+  Because content and frames are generally unaware of their neighbors, dynamic
+  positioning becomes a challenge that gets elevated to the programmer's
+  explicit implementation...which can further complicate our code.
+
+  And the underlying graphics/canvas API sets each drawable element's position
+  (its :term:`Transform`) relative to a canvas origin point set in the lower
+  left-hand corner. While this is a perfectly valid way of doing it, it can
+  make reasoning about element positioning more complicated.
+
+  Plus, there are a lot of features that traditional DTP software like Adobe
+  InDesign, FrameMaker, Microsoft Publisher, or even Microsoft Word implemented
+  as out-of-the-box functionality long ago that `PLATYPUS`_ just doesn't have.
+
+.. topic:: So what about `ReportLab PLUS`_ and `Report Markup Language (RML)`_?
+
+  They're great, too. Definitely more feature-rich and (at least in
+  `RML <Report Markup Language (RML)>`_'s case) syntactically simpler than
+  their open-source siblings (parent?).
+
+  But they are relatively expensive, their feature-set is still limited
+  relative to standards in the world of design-heavy DTP, and their
+  closed-source license limits the projects in which they can be used.
+
+.. topic:: So why not fork `ReportLab`_'s open-source toolkit?
+
+  I thought long and hard about whether to try to refactor their codebase to
+  implement the feature-set I'd been hoping for. Ultimately, I decided it
+  would be wiser to build on top of their toolkit, rather than rebuild what
+  they've done. Here's why:
+
+  #. Their toolkit works great. Once you master their funky logic, their
+     unusual syntax, and their weird inheritance patterns, you can pretty much
+     make their toolkit generate beautiful design-focused PDFs.
+  #. Their toolkit's codebase is written in a style that heavily diverges from
+     :pep:`8` naming conventions, and even though it is Python 3 compatible
+     the code has a fair bit of legacy from the (early) Python 2.x days.
+
+  To be clear, neither of those are criticisms of their toolkit: My thinking
+  here is "If it ain't broke, don't fix it." Their toolkit does the job it was
+  designed to do, and does it well.
+
+  The `ReportLab`_ team has built a truly powerful engine, and (if you'll
+  forgive the extended metaphor) trying to rebuild that engine to fit the
+  chasis of my dreams would be a lot of unnecessary effort.
+
+  A far simpler approach is to simply build that chasis on top of their
+  existing engine. And that's what I'm trying to do with **PDFDesigner**:
+
+.. pull-quote::
+
+  **PDFDesigner** is meant to be an abstraction layer that hides the
+  complexities and extends the functionality of the underlying `ReportLab`_
+  canvas API and `PLATYPUS`_ layout engine.
+
+****************
+Feature Support
+****************
+
+  .. caution::
+
+    At the moment, the feature list below is more of a wishlist than a fact.
+
+Designing beautiful PDFs means you can:
+
+* **Management**
+
+  * Work with an API that is beautiful, readable, and accessible to programmers
+    and designers. (:pep:`20`)
+  * Work in whatever unit of measurement you are most comfortable. (:pep:`20`)
+  * Automatically print your PDF with a :term:`design grid <Design Grid>`. (`KISS`_)
+  * Automatically print a :term:`Page Map` of your PDF. (`KISS`_)
+  * Print individual pages of your PDF, rather than the whole document. (`KISS`_)
+  * Automatically log verbose design warnings. (`KISS`_)
+  * Support the definition of content and design using JSON. (`KISS`_)
+
+* **Pages**
+
+  * Divide your PDF into logical :term:`Pages <Page>` and :term:`Sections <Section>`.
+    (:pep:`20`)
+  * Apply :term:`templates <Template>` to pages, sections, and specific pages
+    within those sections. (`DRY`_)
+  * Common features like page numbers should be accessible automatically. (`KISS`_)
+  * Content should be aware of the :term:`Page` where it appears.
+
+* **Content**
+
+  * Explicitly assemble content into :term:`Stories <Story>`. (:pep:`20`)
+  * Position content automatically, without knowing coordinates. (`KISS`_)
+  * Content should be aware of how much space it has to fit in. (`KISS`_)
+  * Organize content into columns automatically. (`KISS`_)
+  * Explicitly place content using coordinates where (0,0) is the upper
+    left-hand corner of the page (or the lower right-hand corner, or any corner
+    you configure). (:pep:`20` / `KISS`_)
+  * Layer content explicitly, rather than implicitly based on code position.
+    (:pep:`20`)
+  * Content that doesn't fit in its frame automatically flows to another frame.
+    (`KISS`_)
+  * Content explicitly flows to another frame on any :term:`page <Page>`, with
+    the default (implicit) of flowing to the next frame in sequence. (:pep:`20`)
+
+* |strong| :term:`Flowable Content <Flowable Content>` |/strong| :
+
+  * Define styles for frames, text, images, tables, and more. (`DRY`_)
+
+.. include:: ./shared/installation.txt
+
+.. include:: ./shared/basic_usage.txt
+
+.. include:: ./shared/contributing.txt
 
 
 Indices and tables
@@ -18,3 +184,18 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+***********
+References
+***********
+
+.. target-notes::
+
+.. _`ReportLab`: http://www.reportlab.com
+.. _`Python 3.6+`: https://www.python.org/downloads/release/python-360/
+.. _`make your project Python 2/3 compatible`: https://github.com/PythonCharmers/python-future
+.. _`DRY`: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+.. _`KISS`: https://en.wikipedia.org/wiki/KISS_principle
+.. _`PLATYPUS`: http://www.reportlab.com/opensource/
+.. _`ReportLab PLUS`: http://www.reportlab.com/reportlabplus/
+.. _`Report Markup Language (RML)`: http://www.reportlab.com/software/rml-reference/

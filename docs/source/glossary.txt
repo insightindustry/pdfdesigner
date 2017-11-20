@@ -1,0 +1,105 @@
+###########
+Glossary
+###########
+
+.. |br| raw:: html
+
+  <br/>
+
+.. glossary::
+
+  Bounding Box
+    The rectangular area that a given :term:`Design Target` or
+    :term:`Content Element` takes up on a given :term:`Page`. It has a position,
+    a width, a height.
+
+  Content
+
+    |br|
+
+    .. seealso::
+
+      :term:`Content Element`.
+
+  Content Element
+    Something that is drawn on the page so that the reader of a PDF can see. May
+    be a paragraph of text, an image, etc.
+
+  Design Target
+    A rectangular area on a :term:`Page` that may contain one or more
+    :term:`Content Elements <Content Element>`.
+
+  Design Target Template
+    A set of repeatable instructions that can be applied to a
+    :term:`Design Target` which determine how the :term:`Design Target` is
+    drawn.
+
+
+  Design Grid
+    A grid pattern that can be drawn on your PDF when generated to aid in
+    testing your design.
+
+  Flow
+    Flow occurs when a :term:`Content Element` will not fit in its
+    :term:`Design Target`, and therefore must be drawn in the next available
+    :term:`Design Target` in the related :term:`Story` or in the PDF.
+
+  Flowable Content
+    A :term:`Content Element` that is allowed to :term:`flow <Flow>` across
+    :term:`Design Targets <Design Target>`.
+
+  Frame
+
+    |br|
+
+    .. seealso::
+
+      :term:`Design Target`.
+
+  Page
+    An object that corresponds to a single physical page (sheet of paper)
+    within your PDF. What gets drawn on the page is a collection of
+    :term:`Design Targets <Design Target>`, which in turn contain
+    :term:`Content Elements <Content Element>`.
+
+  Page Map
+    A rendering of a page where each the :term:`Bounding Box` of each
+    :term:`Design Target` is drawn. May also include the content contained in
+    the :term:`Design Target`, but does not have to.
+
+  Page Template
+    A set of repeatable instructions that can be applied to a :term:`Page` which
+    determine how that page is drawn.
+
+  Section
+    A collection of :term:`Pages <Page>`.
+
+  Section Template
+    A set of repeatable instructions that can be applied to a :term:`Section`
+    which determine how the :term:`Pages <Page>` in that section are drawn.
+
+  Singleton
+    A class that can only be instantiated *once*. Any references made to this
+    class after its instantiation are directed back to that single instance. It
+    can be re-initialized (overwriting that single instance) using its own
+    methods.
+
+  Story
+    A collection of :term:`Design Targets <Design Target>` whose
+    :term:`content <Content>` can :term:`flow <Flow>` across its members.
+
+  Template
+    A set of repeatable instructions that can be applied to a component of your
+    PDF.
+
+    .. seealso::
+
+      :term:`Design Target Template`
+
+      :term:`Page Template`
+
+      :term:`Section Template`
+
+  Transform
+    The set of properties that together describe the position of an item on a
+    :term:`Page` and the dimensions of the item's :term:`Bounding Box`.

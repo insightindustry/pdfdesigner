@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+import sphinx_rtd_theme
+
 #
 # PDFDesigner documentation build configuration file, created by
 # sphinx-quickstart on Thu Nov 16 21:08:34 2017.
@@ -20,6 +23,9 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__name__), '..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -47,7 +53,7 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.txt'
+source_suffix = ['.txt', '.rst']
 
 # The master toctree document.
 master_doc = 'index'
@@ -90,7 +96,10 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
+
+# The path to where the theme resides.
+html_theme_path = ["_themes", ]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

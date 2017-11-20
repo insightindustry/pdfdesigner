@@ -1,0 +1,12 @@
+**************
+Installation
+**************
+
+.. todo::
+
+    Add installation instructions.
+
+Versioning
+===========
+
+.. include:: ./shared/versioning.txt
