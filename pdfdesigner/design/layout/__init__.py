@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 """
-#########################
 pdfdesigner.design.layout
 ##########################
 
 Defines classes used to represent layout elements in your PDF.
+
+.. contents:: :local:
 
 *********
 Classes:
