@@ -13,6 +13,7 @@ PDFDesigner API Reference
    pdfdesigner.defaults <defaults>
    pdfdesigner.design <design/index>
    pdfdesigner.templates <templates>
+   pdfdesigner.utilities <utilities>
    Glossary <../glossary>
 
 .. automodule:: pdfdesigner

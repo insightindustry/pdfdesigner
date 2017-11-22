@@ -1,2 +1,5 @@
 .. automodule:: pdfdesigner.design.layout
   :members:
+
+.. automodule:: pdfdesigner.design.layout.page_sizes
+  :members:
