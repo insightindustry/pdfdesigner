@@ -8,11 +8,14 @@ Implements classes related to styling PDF content.
 
 """
 from collections import namedtuple
+from reportlab.lib import styles as platypus_styles
 from pdfdesigner.defaults import DEFAULT_SETTINGS
-from pdfdesigner.utilities import is_numeric, is_string, is_member, is_color, is_boolean, is_none
+from pdfdesigner.utilities import is_numeric, is_string, is_member, is_color, \
+    is_boolean, is_none
 
 PropertyReference = namedtuple('PropertyReference',
                                'default reportlab_key validation parameters')
+
 _STYLE_PROPERTIES = {
     'font_name': PropertyReference(DEFAULT_SETTINGS.base_font_name,
                                    'fontName',
@@ -204,27 +207,43 @@ def _get_default_style_properties():
 
     return default_properties
 
+
+def _validate_style_property(name, value):
+    """Check whether the ``value`` supplied is valid for Style Property ``name``."""
+    validation_function = _STYLE_PROPERTIES[name].validation
+    validation_parameters = _STYLE_PROPERTIES[name].parameters
+
+    if validation_parameters is not None:
+        is_valid = validation_function(value, **validation_parameters)
+    else:
+        is_valid = validation_function(value)
+
+    return is_valid
+
+
 class Stylesheet(object):
-    """Store a collection of :class:`Style` objects that can be applied within a single PDF.
-
-    :param name: the identifier given to the :class:`Stylesheet`
-    :type name: string
-
-    :param styles: Iterable of :class:`Style` objects that are to be included in
-      the Stylesheet.
-    :type styles: list/tuple/set
-
-    :param based_on: A Stylesheet whose :class:`Styles <Style>` will be
-      copied into the current object.
-    :type based_on: :class:`Stylesheet`
-
-    :raises TypeError: If the value of ``based_on`` is not a :class:`Stylesheet`.
-    """
+    """Store a collection of :class:`Style` objects applied within a single PDF."""
 
     def __init__(self,
                  name = None,
                  styles = None,
                  based_on = None):
+        """Create a Stylesheet.
+
+        :param name: the identifier given to the :class:`Stylesheet`
+        :type name: string
+
+        :param styles: Iterable of :class:`Style` objects that are to be included in
+          the Stylesheet.
+        :type styles: list/tuple/set
+
+        :param based_on: A Stylesheet whose :class:`Styles <Style>` will be
+          copied into the current object.
+        :type based_on: :class:`Stylesheet`
+
+        :raises TypeError: If the value of ``based_on`` is not a :class:`Stylesheet`.
+
+        """
         #: Name of the Stylesheet.
         self.name = name
         self._styles = {}
@@ -232,7 +251,8 @@ class Stylesheet(object):
 
         if based_on is not None:
             if not isinstance(based_on, Stylesheet):
-                raise TypeError('Stylesheet constructor expects based_on to be another Stylesheet.')
+                raise TypeError('Stylesheet constructor expects based_on to be ' +
+                                'another Stylesheet.')
             self._based_on = based_on.name
 
             self.add_styles(based_on.styles)
@@ -255,13 +275,60 @@ class Stylesheet(object):
         return iter(self.styles)
 
     def __contains__(self, item):
-        """Return True if a style with the name ``item`` is present."""
+        """Return True if a :class:`Style` with the name ``item`` is present."""
         if isinstance(item, str):
             return item in self._styles
         elif isinstance(item, Style):
             return item.name in self._styles
 
         return False
+
+    def __add__(self, other):
+        """Add the :class:`Style` passed as ``other`` to the Stylesheet.
+
+        :param other: A :class:`Style` object.
+        :type other: :class:`Style`
+
+        :raises TypeError: If ``other`` is not a :class:`Style` object.
+
+        """
+        if not isinstance(other, Style):
+            raise TypeError('Only Style objects can be added to a Stylesheet.')
+
+        self.add_style(other, overwrite = True)
+
+    def __sub__(self, other):
+        """Remove the :class:`Style` passed as ``other`` from the Stylesheet.
+
+        :param other: The :class:`Style` to be removed.
+        :type other: string / :class:`Style`
+
+        :raises TypeError: If ``other`` is not a string or a :class:`Style`.
+
+        """
+        if isinstance(other, Style):
+            self.remove_style(other.name)
+        elif isinstance(other, str):
+            self.remove_style(other)
+        else:
+            raise TypeError('Only Style objects or names of Styles can be removed ' +
+                            'from a Stylesheet.')
+
+    def __getattr__(self, name):
+        """Return the :class:`Style` named ``name``.
+
+        :param name: The name of the :class:`Style` to return.
+        :type name: string
+
+        :returns: The :class:`Style` named ``name``.
+        """
+        if not isinstance(name, str):
+            raise TypeError('Style Name should be a string value.')
+
+        if name in self._styles:
+            return self._styles[name]
+
+        raise AttributeError('Unable to find Style ({name}) in Stylesheet.')
 
     @property
     def based_on(self):
@@ -299,7 +366,6 @@ class Stylesheet(object):
             raise ValueError('Style named "{style.name}" already exists.')
 
         self._styles[style.name] = style
-        self._style_names.append(style.name)
 
     def add_styles(self,
                    styles,
@@ -365,26 +431,42 @@ class Stylesheet(object):
 
         return return_value
 
+    def remove_style(self, style_name):
+        """Remove the :class:`Style` named ``style_name`` from the Stylesheet.
+
+        :param style_name: The name of the :class:`Style` to remove.
+        :type style_name: string
+
+        :returns: The :class:`Style` object that was removed, or ``None`` if not present.
+        :rtype: :class:`Style` / ``None``
+
+        """
+        if not isinstance(style_name, str):
+            raise TypeError('style_name is expected to be a string')
+
+        return self._styles.pop(style_name, None)
+
 
 class Style(object):
-    """Defines the properties that affect how a unit of content is drawn in the PDF.
-
-    :param name: The unique name that will be given to the Style.
-    :type name: string
-
-    :param from_style: An existing :class:`Style` whose properties will be
-      copied to the new ``Style`` created.
-    :type from_style: :class:`Style`
-
-    :raises ValueError: If ``name`` is None.
-    :raises TypeError: If ``name`` is not a string.
-
-    """
+    """Defines the properties that affect how a unit of content is drawn in the PDF."""
 
     def __init__(self,
                  name,
-                 from_style = None,
+                 from_style=None,
                  **kwargs):
+        """Create a :class:`Style` object.
+
+        :param name: The unique name that will be given to the Style.
+        :type name: string
+
+        :param from_style: An existing :class:`Style` whose properties will be
+          copied to the new ``Style`` created.
+        :type from_style: :class:`Style`
+
+        :raises ValueError: If ``name`` is None.
+        :raises TypeError: If ``name`` is not a string.
+
+        """
         if name is None:
             raise ValueError('name expects a value, received None')
         if not isinstance(name, str):
@@ -400,7 +482,7 @@ class Style(object):
             return
 
         for key in kwargs:
-            normalized_key = key.upper()
+            normalized_key = key.lower()
             if normalized_key in _STYLE_PROPERTIES.keys():
                 self._properties[normalized_key] = kwargs[key]
 
@@ -411,7 +493,7 @@ class Style(object):
         else:
             repr_string = 'Style({self.name},\n'
             for key in self._properties:
-                repr_string += '{key} = {self._properties[key]},\n'
+                repr_string += '{} = {},\n'.format(key, self._properties[key])
             repr_string = repr_string[:-2]
             repr_string += ')'
 
@@ -423,12 +505,26 @@ class Style(object):
 
     def __getattr__(self, name):
         """Return the :class:`Style` property indicated by Name."""
-        normalized_name = name.upper()
-        if normalized_name not in self._properties.keys():
+        normalized_name = name.lower()
+        if normalized_name not in _STYLE_PROPERTIES.keys():
             raise AttributeError('{name} not a valid Style attribute')
 
-
         return self._properties[normalized_name]
+
+    def __setattr__(self, name, value):
+        """Set the value of the :term:`Style Property` indicated."""
+        if not isinstance(name, str):
+            raise TypeError('name is expected to be a string')
+
+        normalized_name = name.lower()
+        if normalized_name in _STYLE_PROPERTIES:
+            is_valid = _validate_style_property(normalized_name, value)
+            if not is_valid:
+                raise ValueError('value ({value}) is invalid for Style Property {name}')
+
+            self._properties[normalized_name] = value
+        else:
+            super(self.__class__, self).__setattr__(name, value)
 
     @staticmethod
     def from_style(name,
@@ -486,7 +582,23 @@ class Style(object):
         if not isinstance(value, dict):
             raise TypeError('properties expected to be a dict')
         for key in value.keys():
-            normalized_key = key.upper()
+            normalized_key = key.lower()
             if normalized_key not in _STYLE_PROPERTIES.keys():
                 raise ValueError('Property {key} not recognized.')
             self._properties[normalized_key] = value[key]
+
+    def to_platypus(self):
+        """Return the ``Style`` as a ReportLab ``ParagraphStyle`` object.
+
+        :rtype: ``reportlab.lib.styles.ParagraphStyle``
+        """
+        reportlab_properties = {}
+        for key in self._properties:
+            reportlab_key = _STYLE_PROPERTIES[key].reportlab_key
+            reportlab_properties[reportlab_key] = self._properties[key]
+
+        reportlab_style = platypus_styles.ParagraphStyle(reportlab_key,
+                                                         parent=None,
+                                                         **reportlab_properties)
+
+        return reportlab_style
