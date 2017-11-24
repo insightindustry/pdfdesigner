@@ -22,14 +22,15 @@ Classes:
     PDF.
 """
 
-#from .paragraph import Paragraph
-#from .image import Image
-#from .table import Table
-#from .stylesheet import Stylesheet
+# from .paragraph import Paragraph
+# from .image import Image
+# from .table import Table
+from .stylesheet import Stylesheet, Style
 
 __all__ = [
     'Paragraph',
     'Image',
     'Table',
-    'Stylesheet'
+    'Stylesheet',
+    'Style'
 ]

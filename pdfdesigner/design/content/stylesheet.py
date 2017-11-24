@@ -7,39 +7,41 @@ pdfdesigner.design.content.styling
 Implements classes related to styling PDF content.
 
 """
-from collections import namedtuple
 from reportlab.lib import styles as platypus_styles
 from pdfdesigner.defaults import DEFAULT_SETTINGS
-from pdfdesigner.utilities import is_numeric, is_string, is_member, is_color, \
-    is_boolean, is_none
-
-PropertyReference = namedtuple('PropertyReference',
-                               'default reportlab_key validation parameters')
+from pdfdesigner.utilities import PropertyReference, is_numeric, is_string, \
+    is_member, is_color, is_boolean, is_none
 
 _STYLE_PROPERTIES = {
     'font_name': PropertyReference(DEFAULT_SETTINGS.base_font_name,
                                    'fontName',
                                    is_string,
+                                   None,
                                    None),
     'font_size': PropertyReference(10,
                                    'fontSize',
                                    is_numeric,
+                                   None,
                                    None),
     'leading': PropertyReference(12,
                                  'leading',
                                  is_numeric,
+                                 None,
                                  None),
     'left_indent': PropertyReference(0,
                                      'leftIndent',
                                      is_numeric,
+                                     None,
                                      None),
     'right_indent': PropertyReference(0,
                                       'rightIndent',
                                       is_numeric,
+                                      None,
                                       None),
     'first_line_indent': PropertyReference(0,
                                            'firstLineIndent',
                                            is_numeric,
+                                           None,
                                            None),
     'alignment': PropertyReference('LEFT',
                                    'alignment',
@@ -50,36 +52,44 @@ _STYLE_PROPERTIES = {
                                                     'RIGHT',
                                                     'JUSTIFY'],
                                        'allow_none': False
-                                   }),
+                                   },
+                                   None),
     'space_before': PropertyReference(0,
                                       'spaceBefore',
                                       is_numeric,
+                                      None,
                                       None),
     'space_after': PropertyReference(0,
                                      'spaceAfter',
                                      is_numeric,
+                                     None,
                                      None),
     'bullet_font_name': PropertyReference(DEFAULT_SETTINGS.base_font_name,
                                           'bulletFontName',
                                           is_string,
+                                          None,
                                           None),
     'bullet_font_size': PropertyReference(10,
                                           'bulletFontSize',
                                           is_numeric,
+                                          None,
                                           None),
     'bullet_indent': PropertyReference(0,
                                        'bulletIndent',
                                        is_numeric,
+                                       None,
                                        None),
     'bullet_color': PropertyReference('BLACK',
                                       'bulletColor',
                                       is_color,
                                       {
                                           'allow_none': True
-                                      }),
+                                      },
+                                      None),
     'bullet_offset_y': PropertyReference(0,
                                          'bulletOffsetY',
                                          is_numeric,
+                                         None,
                                          None),
     'bullet_direction': PropertyReference('LTR',
                                           'bulletDir',
@@ -91,7 +101,8 @@ _STYLE_PROPERTIES = {
                                                   'CJK'
                                               ],
                                               'allow_none': False
-                                          }),
+                                          },
+                                          None),
     'bullet_dedent': PropertyReference('AUTO',
                                        'bulletDedent',
                                        is_member,
@@ -100,27 +111,32 @@ _STYLE_PROPERTIES = {
                                                'AUTO'
                                            ],
                                            'allow_none': False
-                                       }),
+                                       },
+                                       None),
     'bullet_start': PropertyReference(None,
                                       'bulletStart',
                                       is_string,
+                                      None,
                                       None),
     'bullet_format': PropertyReference(None,
                                        'bulletFormat',
                                        is_none,
+                                       None,
                                        None),
     'text_color': PropertyReference('BLACK',
                                     'textColor',
                                     is_color,
                                     {
                                         'allow_none': True
-                                    }),
+                                    },
+                                    None),
     'background_color': PropertyReference(None,
                                           'backColor',
                                           is_color,
                                           {
                                               'allow_none': True
-                                          }),
+                                          },
+                                          None),
     'word_wrap': PropertyReference(None,
                                    'wordWrap',
                                    is_member,
@@ -129,32 +145,39 @@ _STYLE_PROPERTIES = {
                                                     'LTR',
                                                     'RTL'],
                                        'allow_none': True
-                                   }),
+                                   },
+                                   None),
     'border_width': PropertyReference(0,
                                       'borderWidth',
                                       is_numeric,
+                                      None,
                                       None),
     'border_padding': PropertyReference(0,
                                         'borderPadding',
                                         is_numeric,
+                                        None,
                                         None),
     'border_color': PropertyReference(None,
                                       'borderColor',
                                       is_color,
                                       {
                                           'allow_none': True
-                                      }),
+                                      },
+                                      None),
     'border_radius': PropertyReference(0,
                                        'borderRadius',
                                        is_numeric,
+                                       None,
                                        None),
     'allow_widows': PropertyReference(True,
                                       'allowWidows',
                                       is_boolean,
+                                      None,
                                       None),
     'allow_orphans': PropertyReference(False,
                                        'allowOrphans',
                                        is_boolean,
+                                       None,
                                        None),
     'text_transformation': PropertyReference(None,
                                              'textTransform',
@@ -165,14 +188,17 @@ _STYLE_PROPERTIES = {
                                                      'lowercase',
                                                  ],
                                                  'allow_none': True
-                                             }),
+                                             },
+                                             None),
     'split_long_words': PropertyReference(True,
                                           'splitLongWords',
                                           is_boolean,
+                                          None,
                                           None),
     'underline_proportion': PropertyReference(DEFAULT_SETTINGS.underline_proportion,
                                               'underlineProportion',
                                               is_numeric,
+                                              None,
                                               None),
     'bullet_anchor': PropertyReference('START',
                                        'bulletAnchor',
@@ -182,18 +208,22 @@ _STYLE_PROPERTIES = {
                                                         'MIDDLE',
                                                         'END'],
                                            'allow_none': False
-                                       }),
+                                       },
+                                       None),
     'justify_last_line': PropertyReference(False,
                                            'justifyLastLine',
                                            is_boolean,
+                                           None,
                                            None),
     'justify_line_breaks': PropertyReference(False,
                                              'justifyBreaks',
                                              is_boolean,
+                                             None,
                                              None),
     'space_shrinkage': PropertyReference(DEFAULT_SETTINGS.space_shrinkage,
                                          'spaceShrinkage',
                                          is_numeric,
+                                         None,
                                          None)
 
 }
@@ -479,12 +509,11 @@ class Style(object):
 
         if from_style is not None:
             self = self.from_style(name, from_style)
-            return
-
-        for key in kwargs:
-            normalized_key = key.lower()
-            if normalized_key in _STYLE_PROPERTIES.keys():
-                self._properties[normalized_key] = kwargs[key]
+        else:
+            for key in kwargs:
+                normalized_key = key.lower()
+                if normalized_key in _STYLE_PROPERTIES:
+                    self._properties[normalized_key] = kwargs[key]
 
     def __repr__(self):
         """Return a string representation of the Style."""

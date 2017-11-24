@@ -11,6 +11,11 @@ Module defines (pure) utility functions.
 from numbers import Number
 from decimal import Decimal
 import collections
+from collections import namedtuple
+
+#: A named tuple which defines a property that may or may not map to a ReportLab setting.
+PropertyReference = namedtuple('PropertyReference',
+                               'default reportlab_key validation parameters conversion')
 
 
 def is_numeric(value):
@@ -37,6 +42,7 @@ def is_string(value):
 def is_none(value):
     """Check whether ``value`` is ``None``."""
     return value is None
+
 
 def is_boolean(value):
     """Check whether ``value`` is a boolean."""
@@ -90,6 +96,51 @@ def is_iterable(value,
     return is_valid
 
 
+def is_tuple(value, length = None, expected_type = None):
+    """Check whether the value is a ``tuple``.
+
+    :param value: The value to check.
+
+    :param length: The expected length of the ``tuple``.
+    :type length: int
+
+    :param expected_type: A tuple containing validation functions to apply
+      against the value's members.
+    :type expected_type: tuple
+
+    :returns: ``True`` if ``value`` meets expectations, otherwise ``False``.
+    :rtype: bool
+
+    """
+    if not isinstance(value, tuple):
+        return False
+
+    if expected_type is not None and not isinstance(expected_type, tuple):
+        raise TypeError('expected_type expects to be a tuple')
+
+    if length is None and expected_type is not None:
+        length = len(expected_type)
+
+    if length is not None:
+        if len(value) != length:
+            return False
+
+    if expected_type is not None:
+        for index, validation_operation in enumerate(expected_type):
+            validation_function = validation_operation['function']
+            validation_parameters = validation_operation['parameters']
+
+            if validation_parameters is not None:
+                is_valid = validation_function(value[index], **validation_parameters)
+            else:
+                is_valid = validation_function(value[index])
+
+            if not is_valid:
+                return False
+
+    return True
+
+
 def validate_type(value, type_to_check):
     """Check whether the value is the supplied type."""
     if type_to_check in [str, 'str', 'string']:
@@ -115,3 +166,8 @@ def is_member(value, iterable, allow_none = False):
 def is_color(value, allow_none = False):
     """Check whether the ``value`` is a valid color."""
     raise NotImplementedError
+
+
+def lowercase(value):
+    """Return a lowercase version of the value."""
+    return value.lower()

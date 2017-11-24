@@ -23,7 +23,7 @@ Constants:
     used by PDFDesigner.
 """
 
-#from .default_settings import DEFAULT_SETTINGS
+from .default_settings import DEFAULT_SETTINGS
 #from .default_styles import DEFAULT_STYLES
 #from .default_templates import DEFAULT_TEMPLATES
 #from .default_colors import DEFAULT_COLORS
