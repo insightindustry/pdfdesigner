@@ -30,7 +30,7 @@ from .default_styles import DEFAULT_STYLESHEET
 
 __all__ = [
     'DEFAULT_SETTINGS',
-    'DEFAULT_STYLES',
+    'DEFAULT_STYLESHEET',
     'DEFAULT_TEMPLATES',
     'DEFAULT_COLORS'
 ]

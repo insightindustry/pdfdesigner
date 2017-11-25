@@ -17,6 +17,9 @@ from numbers import Number
 from decimal import Decimal
 from keyword import iskeyword
 
+from pdfdesigner.defaults import DEFAULT_COLORS
+from reportlab.lib.colors import Color, CMYKColor, HexColor
+
 #: A named tuple which defines a property that may or may not map to a ReportLab setting.
 PropertyReference = namedtuple('PropertyReference',
                                'default reportlab_key validation parameters conversion')
@@ -167,9 +170,32 @@ def is_member(value, iterable, allow_none = False):
 
     return value in iterable
 
+
 def is_color(value, allow_none = False):
     """Check whether the ``value`` is a valid color."""
-    raise NotImplementedError
+    if value is None:
+        return allow_none
+
+    if isinstance(value, Color):
+        is_valid = True
+
+    if isinstance(value, str) and value in DEFAULT_COLORS:
+        is_valid = True
+    elif isinstance(value, str):
+        try:
+            color = HexColor(value)
+            is_valid = True
+        except (TypeError, ValueError):
+            is_valid = False
+
+    if is_iterable(value, min_length = 3, max_length = 4):
+        try:
+            color = Color(**value)
+            is_valid = True
+        except (TypeError, ValueError):
+            is_valid = False
+
+    return is_valid
 
 
 def make_lowercase(value):

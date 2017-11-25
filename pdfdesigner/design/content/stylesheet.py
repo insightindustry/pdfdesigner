@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-pdfdesigner.design.content.styling
+pdfdesigner.design.content.stylesheet
 ######################################
 
 Implements classes related to styling PDF content.
