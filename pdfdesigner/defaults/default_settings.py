@@ -9,7 +9,7 @@ Defines the ``DEFAULT_SETTINGS`` constant which is used to configure **PDFDesign
 """
 
 from pdfdesigner.utilities import PropertyReference, is_boolean, is_string, \
-    is_numeric, is_member, is_tuple, is_color, lowercase
+    is_numeric, is_member, is_tuple, is_color, make_lowercase
 
 from pdfdesigner.design.layout.page_sizes import LETTER
 from pdfdesigner.design import units
@@ -106,7 +106,7 @@ _SETTINGS_DEFINITIONS = {
                                             ],
                                             'allow_none': False
                                         },
-                                        lowercase),
+                                        make_lowercase),
     'invariant': PropertyReference(False,
                                    'invariant',
                                    is_boolean,

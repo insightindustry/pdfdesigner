@@ -11,9 +11,9 @@ the default :class:`Stylesheet`.
 """
 from pdfdesigner.design.content import Stylesheet, Style
 
-normal = Style('normal')
+normal = Style('Normal')
 
-heading1 = Style('Heading1',
+heading1 = Style('Heading 1',
                  font_name = 'Helvetica-Bold',
                  font_size = 16,
                  leading = 16 * 1.2,
@@ -22,28 +22,28 @@ heading1 = Style('Heading1',
                  word_wrap = 'LTR',
                  allow_widows = False,
                  allow_orphans = False)
-heading2 = Style('Heading2',
+heading2 = Style('Heading 2',
                  based_on = heading1,
                  font_size = 14,
                  leading = 14 * 1.2,
                  space_before = 6,
                  space_after = 16)
-heading3 = Style('Heading3',
+heading3 = Style('Heading 3',
                  based_on = heading2,
                  font_name = 'Helvetica',
                  space_before = 3,
                  space_after = 12)
-heading4 = Style('Heading4',
+heading4 = Style('Heading 4',
                  based_on = heading3,
                  font_name = 'Helvetica-Bold',
                  font_size = 12,
                  leading = 12 * 1.2,
                  space_before = 3,
                  space_after = 8)
-heading5 = Style('Heading5',
+heading5 = Style('Heading 5',
                  based_on = heading4,
                  font_name = 'Helvetica-Italic')
-heading6 = Style('Heading6',
+heading6 = Style('Heading 6',
                  based_on = heading5,
                  font_name = 'Helvetica-Bold',
                  font_size = 11,
@@ -74,7 +74,7 @@ footer = Style('Footer',
                leading = 9 * 1.2,
                space_before = 0,
                space_after = 0)
-bulletlist = Style('BulletList',
+bulletlist = Style('Bullet List',
                    based_on = normal,
                    bullet_font_name = 'Symbol',
                    bullet_font_size = 10,

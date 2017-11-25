@@ -3,15 +3,8 @@
 """Tests for pdfdesigner.design.content.stylesheet.Style."""
 
 import pytest
-import random
-import string
 from pdfdesigner.design.content import Style
-
-
-def random_string(length):
-    """Return a random string of 6 characters."""
-    return ''.join(random.choice(string.ascii_lowercase) for i in range(length))
-
+from pdfdesigner.utilities import random_string
 
 @pytest.fixture
 def default_style():

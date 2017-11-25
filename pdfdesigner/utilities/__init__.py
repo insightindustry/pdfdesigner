@@ -8,10 +8,14 @@ pdfdesigner.utilities
 Module defines (pure) utility functions.
 
 """
-from numbers import Number
-from decimal import Decimal
+import random
+import string
+import re
 import collections
 from collections import namedtuple
+from numbers import Number
+from decimal import Decimal
+from keyword import iskeyword
 
 #: A named tuple which defines a property that may or may not map to a ReportLab setting.
 PropertyReference = namedtuple('PropertyReference',
@@ -168,6 +172,26 @@ def is_color(value, allow_none = False):
     raise NotImplementedError
 
 
-def lowercase(value):
+def make_lowercase(value):
     """Return a lowercase version of the value."""
     return value.lower()
+
+
+def random_string(length):
+    """Return a random string of ``length`` lowercase characters."""
+    return ''.join(random.choice(string.ascii_lowercase) for i in range(length))
+
+
+def make_identifier(value, lowercase = True):
+    """Return of the ``value`` that is safe for use in attributes."""
+    if lowercase is True:
+        value = value.lower()
+
+    if iskeyword(value):
+        raise ValueError('value ({value}) cannot be a Python keyword'.format(value = value))
+
+    if not value.isidentifier():
+        value = re.sub('[^0-9a-zA-Z_]', '', value)
+        value = re.sub('^[^a-zA-Z_]+', '', value)
+
+    return value

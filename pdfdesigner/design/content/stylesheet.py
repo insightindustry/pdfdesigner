@@ -10,7 +10,7 @@ Implements classes related to styling PDF content.
 from reportlab.lib import styles as platypus_styles
 from pdfdesigner.defaults import DEFAULT_SETTINGS
 from pdfdesigner.utilities import PropertyReference, is_numeric, is_string, \
-    is_member, is_color, is_boolean, is_none, lowercase
+    is_member, is_color, is_boolean, is_none, make_lowercase, make_identifier
 
 _STYLE_PROPERTIES = {
     'font_name': PropertyReference(DEFAULT_SETTINGS.base_font_name,
@@ -112,7 +112,7 @@ _STYLE_PROPERTIES = {
                                            ],
                                            'allow_none': False
                                        },
-                                       lowercase),
+                                       make_lowercase),
     'bullet_start': PropertyReference(None,
                                       'bulletStart',
                                       is_string,
@@ -189,7 +189,7 @@ _STYLE_PROPERTIES = {
                                                  ],
                                                  'allow_none': True
                                              },
-                                             lowercase),
+                                             make_lowercase),
     'split_long_words': PropertyReference(True,
                                           'splitLongWords',
                                           is_boolean,
@@ -209,7 +209,7 @@ _STYLE_PROPERTIES = {
                                                         'END'],
                                            'allow_none': False
                                        },
-                                       lowercase),
+                                       make_lowercase),
     'justify_last_line': PropertyReference(False,
                                            'justifyLastLine',
                                            is_boolean,
@@ -323,7 +323,8 @@ class Stylesheet(object):
 
             self.add_styles(based_on.styles)
 
-        self.add_styles(styles, overwrite = True)
+        if styles is not None:
+            self.add_styles(styles, overwrite = True)
 
     def __repr__(self):
         """Return a valid string representation of the Stylesheet."""
@@ -342,12 +343,25 @@ class Stylesheet(object):
 
     def __contains__(self, item):
         """Return True if a :class:`Style` with the name ``item`` is present."""
-        if isinstance(item, str):
-            return item in self._styles
-        elif isinstance(item, Style):
-            return item.name in self._styles
+        if isinstance(item, Style):
+            return item.identifier_name in self._styles
+        elif isinstance(item, str):
+            normalized_item = make_identifier(item, lowercase = True)
+            return normalized_item in self._styles
 
         return False
+
+    def __getitem__(self, item):
+        """Return the :class:`Style` indicated by `item`."""
+        if not isinstance(item, str) and not isinstance(item, Style):
+            raise TypeError('item must be a string or Style object')
+
+        if isinstance(item, str):
+            normalized_item = make_identifier(item, lowercase = True)
+        elif isinstance(item, Style):
+            normalized_item = item.identifier_name
+
+        return self._styles[normalized_item]
 
     def __add__(self, other):
         """Add the :class:`Style` passed as ``other`` to the Stylesheet.
@@ -391,10 +405,13 @@ class Stylesheet(object):
         if not isinstance(name, str):
             raise TypeError('Style Name should be a string value.')
 
-        if name in self._styles:
-            return self._styles[name]
+        normalized_name = make_identifier(name, lowercase = True)
 
-        raise AttributeError('Unable to find Style ({name}) in Stylesheet.')
+        if normalized_name in self._styles:
+            return self._styles[normalized_name]
+
+        raise AttributeError('Unable to find Style ({name}) in Stylesheet.'
+                             .format(name = name))
 
     @property
     def based_on(self):
@@ -429,9 +446,10 @@ class Stylesheet(object):
             raise TypeError('style is expected to be a Style object')
 
         if self.has_style(style.name) and overwrite is False:
-            raise ValueError('Style named "{style.name}" already exists.')
+            raise ValueError('Style named "{style_name}" already exists.'
+                             .format(style_name = style.name))
 
-        self._styles[style.name] = style
+        self._styles[style.identifier_name] = style
 
     def add_styles(self,
                    styles,
@@ -465,6 +483,9 @@ class Stylesheet(object):
         :rtype: bool
 
         """
+        if not isinstance(style_name, str):
+            raise TypeError('style_name must be a string')
+
         return style_name in self
 
     def get_style(self,
@@ -486,14 +507,17 @@ class Stylesheet(object):
         :rtype: :class:`Style` / ``None``
 
         """
-        return_value = None
-        for style in self._styles:
-            if style.name == style_name:
-                return_value = style
-                break
+        if not isinstance(style_name, str):
+            raise TypeError('style_name must be a string')
+
+        try:
+            return_value = self[style_name]
+        except AttributeError:
+            return_value = None
 
         if return_value is None and fail_silently is False:
-            raise LookupError('Style "{style_name}" not found in Stylesheet.')
+            raise LookupError('Style "{style_name}" not found in Stylesheet.'
+                              .format(style_name = style_name))
 
         return return_value
 
@@ -510,7 +534,9 @@ class Stylesheet(object):
         if not isinstance(style_name, str):
             raise TypeError('style_name is expected to be a string')
 
-        return self._styles.pop(style_name, None)
+        normalized_name = make_identifier(style_name, lowercase = True)
+
+        return self._styles.pop(normalized_name, None)
 
 
 class Style(object):
@@ -569,6 +595,19 @@ class Style(object):
         """Return an easily readable string representation of the object."""
         return 'Style: {self.name} ({self.id})'
 
+    def __getitem__(self, item):
+        """Return the :term:`Style Property` indicated by `item`.
+
+        :param item: The :term:`Style Property` to return.
+        :type item: string
+
+        :returns: Value of the :term:`Style Property`.
+        """
+        if not isinstance(item, str):
+            raise TypeError('item must be a string')
+
+        return self._properties[item]
+
     def __getattr__(self, name):
         """Return the :class:`Style` property indicated by Name."""
         normalized_name = name.lower()
@@ -592,43 +631,10 @@ class Style(object):
         else:
             super(self.__class__, self).__setattr__(name, value)
 
-    @staticmethod
-    def from_style(name,
-                   from_style = None):
-        """
-        Return a :class:`Style` object with properties copied from the supplied template.
-
-        :param name: The name to apply to the new :class:`Style` object.
-        :type name: string
-
-        :param from_style: An existing :class:`Style` whose properties will be
-          copied to the new ``Style`` created.
-        :type from_style: :class:`Style`
-
-        :returns: A :class:`Style` object with properties copied from the
-          supplied template.
-        :rtype: :class:`Style`
-
-        :raises ValueError: If either parameter is ``None``.
-        :raises TypeError: If ``name`` is not a string, or ``from_style`` is not
-          a :class:`Style`.
-
-        """
-        if name is None:
-            raise ValueError("Style requires a name.")
-        if from_style is None:
-            raise ValueError('Style.from_style() expects a base style.')
-
-        if not isinstance(name, str):
-            raise TypeError('name expects a string')
-        if not isinstance(from_style, Style):
-            raise TypeError('from_style expects a Style object')
-
-        new_style = Style(name)
-        new_style._from_style = from_style.name
-        new_style.properties = from_style.properties
-
-        return new_style
+    @property
+    def identifier_name(self):
+        """Return an identifier-compatible version of the object's ``name``."""
+        return make_identifier(self.name, lowercase = True)
 
     @property
     def properties(self):
@@ -676,3 +682,41 @@ class Style(object):
                                                          **reportlab_properties)
 
         return reportlab_style
+
+    @staticmethod
+    def from_style(name,
+                   from_style = None):
+        """
+        Return a :class:`Style` object with properties copied from the supplied template.
+
+        :param name: The name to apply to the new :class:`Style` object.
+        :type name: string
+
+        :param from_style: An existing :class:`Style` whose properties will be
+          copied to the new ``Style`` created.
+        :type from_style: :class:`Style`
+
+        :returns: A :class:`Style` object with properties copied from the
+          supplied template.
+        :rtype: :class:`Style`
+
+        :raises ValueError: If either parameter is ``None``.
+        :raises TypeError: If ``name`` is not a string, or ``from_style`` is not
+          a :class:`Style`.
+
+        """
+        if name is None:
+            raise ValueError("Style requires a name.")
+        if from_style is None:
+            raise ValueError('Style.from_style() expects a base style.')
+
+        if not isinstance(name, str):
+            raise TypeError('name expects a string')
+        if not isinstance(from_style, Style):
+            raise TypeError('from_style expects a Style object')
+
+        new_style = Style(name)
+        new_style._from_style = from_style.name
+        new_style.properties = from_style.properties
+
+        return new_style
