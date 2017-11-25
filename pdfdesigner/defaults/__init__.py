@@ -13,7 +13,7 @@ Constants:
     DEFAULT_SETTINGS - The default configuration settings that are used for
     PDFDesigner.
 
-    DEFAULT_STYLES - A :class:`Stylesheet` that contains the default styles
+    DEFAULT_STYLESHEET - A :class:`Stylesheet` that contains the default styles
     known to PDFDesigner.
 
     DEFAULT_TEMPLATES - A ``dict`` with the default templates used by
@@ -23,8 +23,8 @@ Constants:
     used by PDFDesigner.
 """
 
-#from .default_settings import DEFAULT_SETTINGS
-#from .default_styles import DEFAULT_STYLES
+from .default_settings import DEFAULT_SETTINGS
+from .default_styles import DEFAULT_STYLESHEET
 #from .default_templates import DEFAULT_TEMPLATES
 #from .default_colors import DEFAULT_COLORS
 

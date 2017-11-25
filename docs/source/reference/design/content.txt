@@ -1,2 +1,5 @@
 .. automodule:: pdfdesigner.design.content
   :members:
+
+.. automodule:: pdfdesigner.design.content.stylesheet
+  :members:

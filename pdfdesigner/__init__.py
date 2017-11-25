@@ -60,3 +60,22 @@ Subpackages:
 import warnings
 
 from ._PDFDesigner import _PDFDesigner
+from pdfdesigner.design.content import register_font_family as _register_font_family
+
+
+def register_font_family(family_name, fonts = None):
+    """Register a set of :term:`Font Variants <Font Variant>` in a :term:`Font Family`.
+
+    :param family_name: The name of the :term:`Font Family`.
+    :type family_name: string
+
+    :param fonts: An iterable of :term:`Font Definition` objects that are members
+      of the :term:`Font Family`.
+    :type fonts: iterable of :class:`FontDefinition`.
+
+    :raises TypeError: If ``family_name`` is not a string, ``fonts`` is not
+      iterable, or ``fonts`` does not contain :class:`FontDefinition` objects.
+    :raises ValueError: If ``fonts`` is None or an empty iterable.
+
+    """
+    _register_font_family(family_name, fonts)
