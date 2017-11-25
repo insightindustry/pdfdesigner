@@ -1,45 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-pdfdesigner.design.content.color
+pdfdesigner.defaults.default_colors
 ######################################
 
-Implements classes and functions related to working with colors.
+Defines the ``DEFAULT_COLORS`` constant which maps to HTML-standard color definitions.
 
 """
+
 from reportlab.lib.colors import HexColor
-
-
-def hex_to_rgb(hex_color, percentage = False):
-    """Return a tuple of form ``(red, green, blue)`` representing the color.
-
-    :param hex_color: The color expressed in hexadecimal.
-    :type hex_color: string
-
-    :param percentage: Indicates that the RGB value returned should be expressed
-      as a percentage of the color gradient (e.g. white would be R:1, G:1, B:1
-      and not R:255, G:255, B:255).
-    :type percentage: bool
-
-    :returns: The color expressed as ``(red, green, blue)``.
-    :rtype: tuple
-    """
-    hex_color = hex_color.lstrip('#')
-    length = len(hex_color)
-    return_value = tuple(int(hex_color[i:i + length // 3], 16) for i in range(0,
-                                                                              length,
-                                                                              length // 3)
-                         )
-
-    if percentage is True:
-        red = return_value[0] / 255
-        green = return_value[1] / 255
-        blue = return_value[2] / 255
-
-        return_value = (red, green, blue)
-
-    return return_value
-
 
 #: Dictionary of default color values taken from the HTML Standard.
 DEFAULT_COLORS = {
