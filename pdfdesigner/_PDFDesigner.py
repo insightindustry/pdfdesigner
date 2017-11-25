@@ -21,8 +21,9 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
 
-from pdfdesigner.defaults import DEFAULT_SETTINGS
+from pdfdesigner.defaults import DEFAULT_SETTINGS, DEFAULT_STYLESHEET
 from pdfdesigner.defaults.default_settings import PDFDesignerSettings
+from pdfdesigner.design.content import Stylesheet, Style
 
 
 class _PDFDesigner(object):
@@ -35,7 +36,9 @@ class _PDFDesigner(object):
     def __init__(self,
                  settings = None,
                  title = None,
-                 author = None):
+                 author = None,
+                 stylesheet = None,
+                 default_style = 'normal'):
         """Create a :class:`_PDFDesigner` instance.
 
         :param settings: Configuration settings to apply to **PDFDesigner**.
@@ -47,6 +50,13 @@ class _PDFDesigner(object):
         :param author: The author of the PDF.
         :type author: string
 
+        :param stylesheet: The :class:`Stylesheet` to apply to the PDF.
+        :type stylesheet: :class:`Stylesheet`
+
+        :param default_style: The name of the :class:`Style` to use as the
+          default for :class:`Paragraph` :term:`Content Elements <Content Element>`.
+        :type default_style: string / :class:`Style`
+
         """
         if settings is not None and not isinstance(settings, PDFDesignerSettings):
             raise TypeError('settings expected to be a PDFDesignerSettings object')
@@ -57,8 +67,31 @@ class _PDFDesigner(object):
         if author is not None and not isinstance(author, str):
             raise TypeError('author expected to be a string')
 
+        if stylesheet is not None and not isinstance(stylesheet, Stylesheet):
+            raise TypeError('stylesheet expected to be a Stylesheet object')
+
+        if default_style is not None:
+            if not isinstance(default_style, str) and \
+               not isinstance(default_style, Style):
+                raise TypeError('default_style expected to be a string or Style object')
+
+            if isinstance(default_style, str):
+                default_style_name = default_style
+            elif isinstance(default_style, Style):
+                default_style_name = default_style.name
+
         if settings is None:
             settings = DEFAULT_SETTINGS
+
+        if stylesheet is None:
+            stylesheet = DEFAULT_STYLESHEET
+
+        if default_style_name:
+            if default_style_name not in stylesheet:
+                raise ValueError('default_style ({default_style_name}) not found in' +
+                                 ' Stylesheet')
+        else:
+            default_style_name = None
 
         #: A :class:`PDFDesignerSettings` instance that manages configuration.
         self.settings = settings
@@ -71,6 +104,14 @@ class _PDFDesigner(object):
 
         #: If the PDF's content or configuration has changed, returns ``True``.
         self.is_outdated = False
+
+        #: The :class:`Stylesheet` that contains :class:`Styles <Style>` that
+        #: will apply to the PDF.
+        self.stylesheet = stylesheet
+
+        #: The name of the default style to apply to
+        #: :term:`Content Elements <Content Element>`
+        self.default_style_name = default_style_name
 
         self._binary_data = None
 

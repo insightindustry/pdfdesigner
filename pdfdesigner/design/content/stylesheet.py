@@ -224,7 +224,43 @@ _STYLE_PROPERTIES = {
                                          'spaceShrinkage',
                                          is_numeric,
                                          None,
-                                         None)
+                                         None),
+
+    'rule_above_thickness': PropertyReference(0,
+                                              None,
+                                              is_numeric,
+                                              None,
+                                              None),
+    'rule_above_color': PropertyReference(None,
+                                          None,
+                                          is_color,
+                                          {
+                                              'allow_none': True
+                                          },
+                                          None),
+    'rule_above_padding': PropertyReference(12,
+                                            None,
+                                            is_numeric,
+                                            None,
+                                            None),
+
+    'rule_below_thickness': PropertyReference(0,
+                                              None,
+                                              is_numeric,
+                                              None,
+                                              None),
+    'rule_below_color': PropertyReference(None,
+                                          None,
+                                          is_color,
+                                          {
+                                              'allow_none': True
+                                          },
+                                          None),
+    'rule_below_padding': PropertyReference(12,
+                                            None,
+                                            is_numeric,
+                                            None,
+                                            None),
 
 }
 
