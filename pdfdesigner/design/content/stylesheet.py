@@ -10,7 +10,7 @@ Implements classes related to styling PDF content.
 from reportlab.lib import styles as platypus_styles
 from pdfdesigner.defaults import DEFAULT_SETTINGS
 from pdfdesigner.utilities import PropertyReference, is_numeric, is_string, \
-    is_member, is_color, is_boolean, is_none
+    is_member, is_color, is_boolean, is_none, lowercase
 
 _STYLE_PROPERTIES = {
     'font_name': PropertyReference(DEFAULT_SETTINGS.base_font_name,
@@ -112,7 +112,7 @@ _STYLE_PROPERTIES = {
                                            ],
                                            'allow_none': False
                                        },
-                                       None),
+                                       lowercase),
     'bullet_start': PropertyReference(None,
                                       'bulletStart',
                                       is_string,
@@ -184,12 +184,12 @@ _STYLE_PROPERTIES = {
                                              is_member,
                                              {
                                                  'iterable': [
-                                                     'uppercase',
-                                                     'lowercase',
+                                                     'UPPERCASE',
+                                                     'LOWERCASE',
                                                  ],
                                                  'allow_none': True
                                              },
-                                             None),
+                                             lowercase),
     'split_long_words': PropertyReference(True,
                                           'splitLongWords',
                                           is_boolean,
@@ -209,7 +209,7 @@ _STYLE_PROPERTIES = {
                                                         'END'],
                                            'allow_none': False
                                        },
-                                       None),
+                                       lowercase),
     'justify_last_line': PropertyReference(False,
                                            'justifyLastLine',
                                            is_boolean,
@@ -544,12 +544,13 @@ class Style(object):
         self._properties = _get_default_style_properties()
 
         if from_style is not None:
-            self = self.from_style(name, from_style)
-        else:
-            for key in kwargs:
-                normalized_key = key.lower()
-                if normalized_key in _STYLE_PROPERTIES:
-                    self._properties[normalized_key] = kwargs[key]
+            self._from_style = from_style.name
+            self.properties = from_style.properties
+
+        for key in kwargs:
+            normalized_key = key.lower()
+            if normalized_key in _STYLE_PROPERTIES:
+                self._properties[normalized_key] = kwargs[key]
 
     def __repr__(self):
         """Return a string representation of the Style."""
@@ -661,9 +662,16 @@ class Style(object):
         reportlab_properties = {}
         for key in self._properties:
             reportlab_key = _STYLE_PROPERTIES[key].reportlab_key
-            reportlab_properties[reportlab_key] = self._properties[key]
+            if reportlab_key is None:
+                continue
 
-        reportlab_style = platypus_styles.ParagraphStyle(reportlab_key,
+            conversion = _STYLE_PROPERTIES[key].conversion
+            if conversion is not None:
+                reportlab_properties[reportlab_key] = conversion(self._properties[key])
+            else:
+                reportlab_properties[reportlab_key] = self._properties[key]
+
+        reportlab_style = platypus_styles.ParagraphStyle(self.name,
                                                          parent=None,
                                                          **reportlab_properties)
 
