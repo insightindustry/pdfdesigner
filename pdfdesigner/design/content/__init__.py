@@ -26,11 +26,14 @@ Classes:
 # from .image import Image
 # from .table import Table
 from .stylesheet import Stylesheet, Style
+from .fonts import FontDefinition, register_font_family
 
 __all__ = [
     'Paragraph',
     'Image',
     'Table',
     'Stylesheet',
-    'Style'
+    'Style',
+    'FontDefinition',
+    'register_font_family'
 ]
