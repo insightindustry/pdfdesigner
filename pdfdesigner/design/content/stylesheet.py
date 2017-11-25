@@ -7,10 +7,13 @@ pdfdesigner.design.content.stylesheet
 Implements classes related to styling PDF content.
 
 """
+import math
+import string
 from reportlab.lib import styles as platypus_styles
 from pdfdesigner.defaults import DEFAULT_SETTINGS
 from pdfdesigner.utilities import PropertyReference, is_numeric, is_string, \
-    is_member, is_color, is_boolean, is_none, make_lowercase, make_identifier
+    is_member, is_color, is_boolean, make_lowercase, make_identifier, \
+    convert_alignment
 
 _STYLE_PROPERTIES = {
     'font_name': PropertyReference(DEFAULT_SETTINGS.base_font_name,
@@ -53,7 +56,7 @@ _STYLE_PROPERTIES = {
                                                     'JUSTIFY'],
                                        'allow_none': False
                                    },
-                                   None),
+                                   convert_alignment),
     'space_before': PropertyReference(0,
                                       'spaceBefore',
                                       is_numeric,
@@ -120,10 +123,23 @@ _STYLE_PROPERTIES = {
                                       None),
     'bullet_format': PropertyReference(None,
                                        'bulletFormat',
-                                       is_none,
-                                       None,
+                                       is_member,
+                                       {
+                                           'iterable': [
+                                               'dot',
+                                               'square',
+                                               'hash',
+                                               'number',
+                                               'number-period',
+                                               'uppercase-letter',
+                                               'uppercase-letter-period',
+                                               'lowercase-letter',
+                                               'lowercase-letter-period'
+                                           ],
+                                           'allow_none': True
+                                       },
                                        None),
-    'text_color': PropertyReference('BLACK',
+    'text_color': PropertyReference('black',
                                     'textColor',
                                     is_color,
                                     {
@@ -625,7 +641,8 @@ class Style(object):
         if normalized_name in _STYLE_PROPERTIES:
             is_valid = _validate_style_property(normalized_name, value)
             if not is_valid:
-                raise ValueError('value ({value}) is invalid for Style Property {name}')
+                raise ValueError('value ({value}) is invalid for Style Property {name}'
+                                 .format(value = value, name = name))
 
             self._properties[normalized_name] = value
         else:
@@ -659,6 +676,38 @@ class Style(object):
             if normalized_key not in _STYLE_PROPERTIES.keys():
                 raise ValueError('Property {key} not recognized.')
             self._properties[normalized_key] = value[key]
+
+    def get_bullet_text(self, list_position, zero_index = True):
+        """Return the text to use for the bullet based on the position supplied."""
+        if not is_numeric(list_position):
+            raise TypeError('list_position must be a number')
+        if not isinstance(list_position, int):
+            list_position = math.ceil(list_position)
+        if list_position < 0:
+            raise ValueError('list_position cannot be negative')
+
+        if self.bullet_format == 'bullet':
+            bullet_text = '\u2022'
+        elif self.bullet_format == 'triangular-bullet':
+            bullet_text = '\u2023'
+        elif self.bullet_format == 'hash':
+            bullet_text = '#'
+        elif self.bullet_format == 'number':
+            if zero_index:
+                bullet_text = str(list_position)
+            else:
+                bullet_text = str(list_position + 1)
+        elif self.bullet_format == 'uppercase-letter' or \
+             self.bullet_format == 'uppercase-letter-period':
+            bullet_text = string.ascii_uppercase[list_position]
+        elif self.bullet_format == 'lowercase-letter' or \
+             self.bullet_format == 'lowercase-letter-period':
+            bullet_text = string.ascii_lowercase[list_position]
+
+        if 'period' in self.bullet_format:
+            bullet_text += '.'
+
+        return bullet_text
 
     def to_platypus(self):
         """Return the ``Style`` as a ReportLab ``ParagraphStyle`` object.

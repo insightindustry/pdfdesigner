@@ -18,7 +18,9 @@ from decimal import Decimal
 from keyword import iskeyword
 
 from pdfdesigner.defaults import DEFAULT_COLORS
-from reportlab.lib.colors import Color, CMYKColor, HexColor
+
+from reportlab.lib.colors import Color, HexColor
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER, TA_JUSTIFY
 
 #: A named tuple which defines a property that may or may not map to a ReportLab setting.
 PropertyReference = namedtuple('PropertyReference',
@@ -252,3 +254,19 @@ def hex_to_rgb(hex_color, percentage = False):
         return_value = (red, green, blue)
 
     return return_value
+
+
+def convert_alignment(value):
+    """Return a ReportLab Platypus-compatible alignment value."""
+    conversion_dict = {
+        'LEFT': TA_LEFT,
+        'RIGHT': TA_RIGHT,
+        'CENTER': TA_CENTER,
+        'JUSTIFY': TA_JUSTIFY
+    }
+
+    if value not in conversion_dict:
+        raise ValueError('value ({value}) is not a valid alignment'
+                         .format(value = value))
+
+    return conversion_dict[value]

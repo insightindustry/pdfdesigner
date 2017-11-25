@@ -79,3 +79,13 @@ def register_font_family(family_name, fonts = None):
 
     """
     _register_font_family(family_name, fonts)
+
+
+def get_stylesheet():
+    """Return the :class:`_PDFDesigner` instance's configured stylesheet."""
+    raise NotImplementedError()
+
+
+def get_default_style():
+    """Return the :class:`_PDFDesigner` instance's configured default style."""
+    raise NotImplementedError()
