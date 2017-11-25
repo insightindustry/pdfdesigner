@@ -624,6 +624,7 @@ class Style(object):
             raise TypeError('from_style expects a Style object')
 
         new_style = Style(name)
+        new_style._from_style = from_style.name
         new_style.properties = from_style.properties
 
         return new_style
