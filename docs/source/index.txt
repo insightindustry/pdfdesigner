@@ -45,16 +45,16 @@ Why PDFDesigner?
 
 .. topic:: Why do we need **PDFDesigner**? Aren't `ReportLab`_ and `PLATYPUS`_ good enough?
 
-  Sure, `ReportLab`_ and `PLATYPUS`_ are incredibly powerful tools for the
+  Sure, `ReportLab`_ and `PLATYPUS`_ are incredibly powerful tools for
   programmatic generation of PDFs in Python. They're so powerful, that over
   the years they've basically become the community and industry standard.
 
   For simple (read: uncomplicated) documents, they're easy enough to use. But
-  when we're trying to implement design-heavy PDF generation their logic and
-  syntax become cumbersome. Having used them to implement some very
-  design-heavy PDF generation, I tend to consider them "fiddly".
+  when we're trying to implement design-heavy PDFs their logic and syntax become
+  cumbersome. Having used them to implement some very design-heavy PDF
+  generation, I tend to consider them "fiddly".
 
-  For one thing, the layout engine `PLATYPUS`_ works by iterating over lists
+  For one thing, the `PLATYPUS`_ layout engine works by iterating over lists
   of :term:`Design Targets <Design Target>` (called ``Frames`` in their
   parlance) and within each frame over lists of :term:`Flowable Content`
   (called ``Flowables`` in their parlance). If you have a complicated design,
@@ -65,7 +65,7 @@ Why PDFDesigner?
   Applying dynamic or conditional logic to frames or content (e.g. "shrink
   this frame if X" or "draw this image if Y") has a complicated syntax that is
   hard to understand and hard to test for. Complicated conditional logic is
-  likely to require complex rules of inheritance to assemble.
+  likely to require complex inheritance and conditional branching.
 
   Because content and frames are generally unaware of their neighbors, dynamic
   positioning becomes a challenge that gets elevated to the programmer's
@@ -73,8 +73,9 @@ Why PDFDesigner?
 
   And the underlying graphics/canvas API sets each drawable element's position
   (its :term:`Transform`) relative to a canvas origin point set in the lower
-  left-hand corner. While this is a perfectly valid way of doing it, it can
-  make reasoning about element positioning more complicated.
+  left-hand corner. While this is a perfectly valid way of doing it, it can be
+  counterintuitive for people who assume (0, 0) would be a page's upper
+  left-hand corner.
 
   Plus, there are a lot of features that traditional DTP software like Adobe
   InDesign, FrameMaker, Microsoft Publisher, or even Microsoft Word implemented
@@ -84,7 +85,7 @@ Why PDFDesigner?
 
   They're great, too. Definitely more feature-rich and (at least in
   `RML <Report Markup Language (RML)>`_'s case) syntactically simpler than
-  their open-source siblings (parent?).
+  their open-source siblings (parents?).
 
   But they are relatively expensive, their feature-set is still limited
   relative to standards in the world of design-heavy DTP, and their
@@ -101,7 +102,7 @@ Why PDFDesigner?
      unusual syntax, and their weird inheritance patterns, you can pretty much
      make their toolkit generate beautiful design-focused PDFs.
   #. Their toolkit's codebase is written in a style that heavily diverges from
-     :pep:`8` naming conventions, and even though it is Python 3 compatible
+     :pep:`8` naming conventions, and even though it is Python 3 compatible,
      the code has a fair bit of legacy from the (early) Python 2.x days.
 
   To be clear, neither of those are criticisms of their toolkit: My thinking
