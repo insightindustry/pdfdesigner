@@ -10,12 +10,12 @@ Implements the class for defining a Paragraph.
 from reportlab import platypus
 
 import pdfdesigner
-from pdfdesigner.design.content import Style
+from pdfdesigner.design.content import Style, ContentElement
 from pdfdesigner.utilities import is_boolean
 
 
-class Paragraph(platypus.Paragraph):
-    """:term:`Flowable Content` that contains text only."""
+class Paragraph(ContentElement):
+    """:term:`Content Element` that contains text only."""
 
     def __init__(self,
                  text,
@@ -83,22 +83,18 @@ class Paragraph(platypus.Paragraph):
           the :class:`Style` object's configured alignment.
         :type alignment: string, member of: ('LEFT', 'CENTER', 'RIGHT', 'JUSTIFY')
         """
-        self._text_argument = text
-        self._text = None
-        self._style = None
+        super(self.__class__, self).__init__(style)
+
+        self.text = text
+        self._list_position = list_position
 
         self._case_sensitive_markup = case_sensitive_markup
-
-        if style is None:
-            style = pdfdesigner.get_default_style()
-
-        self.set_style(style)
 
         if bullet is None:
             self._bullet_text = self.style.get_bullet_text(list_position)
         else:
             if not isinstance(bullet, str):
-                raise TypeError('bullet must be a string')
+                raise TypeError('bullet must be a string or None')
 
             self._bullet_text = bullet
 
@@ -107,7 +103,19 @@ class Paragraph(platypus.Paragraph):
 
         self.encoding = encoding
 
-        self._initialize()
+    def __repr__(self):
+        """Return a string representation of the :class:`Paragraph` object."""
+        return_tuple = ('Paragraph("{}", style = {}, '
+                        .format(self.text, self.style),
+                        'bullet = "{}", list_position = {}, '
+                        .format(self._bullet_text, self._list_position),
+                        'encoding = "{}", '
+                        .format(self.encoding),
+                        'case_sensitive_markup = {}, '
+                        .format(self._case_sensitive_markup),
+                        'alignment = "{}")'.format(self.alignment))
+
+        return ''.join(return_tuple)
 
     @property
     def alignment(self):
@@ -132,37 +140,11 @@ class Paragraph(platypus.Paragraph):
 
         self._case_sensitive_markup = value
 
-    def set_style(self, style):
-        """Apply a :class:`Style` to the paragraph.
-
-        :param style: A :class:`Style` or its name to apply to the Paragraph.
-        :type style: string / :class:`Style`
-
-        :raises TypeError: If not a :class:`Style` or string.
-        :raises ValueError: If a string, but the name is not in the PDF's
-          :term:`Stylesheet`.
-        """
-        if not isinstance(style, Style) and not isinstance(style, str):
-            raise TypeError('style must be either a string or a Style object')
-
-        if isinstance(style, Style):
-            self.style = style
-        elif isinstance(style, str):
-            if style not in pdfdesigner.get_stylesheet():
-                raise ValueError('style ({style}) is not present in the Stylesheet'
-                                 .format(style = style))
-            self.style = pdfdesigner.get_stylesheet()[style]
-
-        self._initialize()
-
     def to_platypus(self):
         """Return a ReportLab ``platypus.Paragraph`` version of the object."""
-        raise NotImplementedError()
-
-    def _initialize(self):
-        """Run ``platypus.Paragraph._setup()`` to initialize the Paragraph."""
-        self._setup(self._text_argument,
-                    self.style.to_platypus(),
-                    self._bullet_text,
-                    None,
-                    platypus.paragraph.cleanBlockQuotedText)
+        return platypus.Paragrah(self.text,
+                                 self.style.to_platypus(),
+                                 bulletText = self._bullet_text,
+                                 frags = None,
+                                 caseSensitive = self._case_sensitive_markup,
+                                 encoding = self.encoding)

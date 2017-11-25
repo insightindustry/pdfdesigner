@@ -89,3 +89,49 @@ def get_stylesheet():
 def get_default_style():
     """Return the :class:`_PDFDesigner` instance's configured default style."""
     raise NotImplementedError()
+
+
+def get_page_number(item_id,
+                    first_only = False):
+    """Return the page number on which a given item appears.
+
+    :param item_id: The ``id`` of the object who's page number should be returned.
+
+    :param first_only: If ``True``, will return the first page number where the
+      item appears. If ``False``, will return all page numbers.
+
+    :returns: The :term:`page number(s) <Page Number>` (non zero-indexed).
+    :rtype: int or tuple
+
+    """
+    raise NotImplementedError()
+
+
+def get_component(item_id):
+    """Return the :term:`Content Element` or :term:`Design Target` identified
+      by ``item_id``.
+
+    :param item_id: The ``id`` of the object who's page number should be returned.
+
+    :returns: The content identified by ``item_id``.
+
+    """
+    raise NotImplementedError()
+
+
+def get_container(item_id,
+                  first_only = False):
+    """Return the :term:`Design Target` that contains the :class:`ContentElement`
+      identified by ``item_id``.
+
+    :param item_id: The ``id`` of the :class:`ContentElement` who's container
+      should be returned.
+
+    :param first_only: If ``True``, returns the first :class:`DesignTarget` where
+      the :class:`ContentElement` appears. If ``False``, returns a tuple with all
+      of them.
+
+    :returns: The :class:`DesignTarget` identified by ``item_id``.
+    :rtype: :class:`DesignTarget` / ``None`` / tuple
+    """
+    raise NotImplementedError()

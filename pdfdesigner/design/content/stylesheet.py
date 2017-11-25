@@ -278,6 +278,12 @@ _STYLE_PROPERTIES = {
                                             None,
                                             None),
 
+    'keep_together': PropertyReference(False,
+                                       None,
+                                       is_boolean,
+                                       None,
+                                       None),
+
 }
 
 
@@ -685,6 +691,9 @@ class Style(object):
             list_position = math.ceil(list_position)
         if list_position < 0:
             raise ValueError('list_position cannot be negative')
+
+        if self.bullet_format is None:
+            return None
 
         if self.bullet_format == 'bullet':
             bullet_text = '\u2022'
