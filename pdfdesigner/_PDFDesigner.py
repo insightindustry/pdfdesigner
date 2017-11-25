@@ -21,17 +21,216 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
 
+from pdfdesigner.defaults import DEFAULT_SETTINGS
+from pdfdesigner.defaults.default_settings import PDFDesignerSettings
+
+
 class _PDFDesigner(object):
     """The internal _PDFDesigner object that generates the PDF.
 
     You never call this class or inherit it directly. It is used internally
     within the :mod:`pdfdesigner` namespace.
     """
-    pass
-    
- class Singleton(object):
-    """
-    A non-thread-safe helper class to ease implementing singletons.
+
+    def __init__(self,
+                 settings = None,
+                 title = None,
+                 author = None):
+        """Create a :class:`_PDFDesigner` instance.
+
+        :param settings: Configuration settings to apply to **PDFDesigner**.
+        :type settings: :class:`PDFDesignerSettings`
+
+        :param title: The title to apply to the PDF.
+        :type title: string
+
+        :param author: The author of the PDF.
+        :type author: string
+
+        """
+        if settings is not None and not isinstance(settings, PDFDesignerSettings):
+            raise TypeError('settings expected to be a PDFDesignerSettings object')
+
+        if title is not None and not isinstance(title, str):
+            raise TypeError('title expected to be a string')
+
+        if author is not None and not isinstance(author, str):
+            raise TypeError('author expected to be a string')
+
+        if settings is None:
+            settings = DEFAULT_SETTINGS
+
+        #: A :class:`PDFDesignerSettings` instance that manages configuration.
+        self.settings = settings
+
+        #: The title that will be applied to the PDF.
+        self.title = title
+
+        #: The author that will be used in the PDF's properties.
+        self.author = author
+
+        #: If the PDF's content or configuration has changed, returns ``True``.
+        self.is_outdated = False
+
+        self._binary_data = None
+
+    @property
+    def default_unit(self):
+        """The default unit of measurement used for this PDF."""
+        return self.settings.default_unit
+
+    @property
+    def binary_data(self):
+        """The :ref:`io.bytesIO` object with the PDF's binary data.
+
+        Returns ``None`` if the PDF is outdated.
+        """
+        if self.is_outdated:
+            return None
+
+        return self._binary_data
+
+    def generate_pdf(self,
+                     target_filename = None,
+                     suppress_warnings = False,
+                     log_filename = None,
+                     print_grid = False,
+                     print_crop_marks = False):
+        """Generate the PDF.
+
+        :param target_filename: If not ``None``, writes the PDF to the indicated
+          file.
+        :type target_filename: string
+
+        :param supress_warnings: If ``True``, will hide :term:`Warnings <Warning>`.
+        :type supress_warnings: bool
+
+        :param log_filename: If not ``None``, writes a copy of the log to the
+          file indicated.
+        :type log_filename: string
+
+        :param print_grid: If ``True``, will print the :term:`Page Grid` overlaid
+          above the PDF content.
+        :type print_grid: bool
+
+        :param print_crop_marks: If ``True``, will print :term:`Crop Marks` at
+          the margins of each page.
+
+        :returns: Binary data of the generated PDF.
+        :rtype: :ref:`io.BytesIO`
+
+        :raises IOError: If cannot write to either ``target_filename`` or
+          ``log_filename``.
+
+        :raises TypeError: If parameters are not of expected types.
+        """
+        if target_filename is not None and not isinstance(target_filename, str):
+            raise TypeError('target_filename expects a string')
+
+        if log_filename is not None and not isinstance(log_filename, str):
+            raise TypeError('log_filename expects a string')
+
+        if suppress_warnings is not None and not isinstance(suppress_warnings, bool):
+            raise TypeError('supress_warnings expects a bool')
+
+        if print_grid is not None and not isinstance(print_grid, bool):
+            raise TypeError('print_grid expects a bool')
+
+        if print_crop_marks is not None and not isinstance(print_crop_marks, bool):
+            raise TypeError('print_crop_marks expects a bool')
+
+        raise NotImplementedError()
+
+        self.is_outdated = False
+
+    def generate_page_map(self,
+                          target_filename = None,
+                          suppress_warnings = False,
+                          log_filename = None,
+                          include_content = False,
+                          include_labels = True,
+                          print_grid = True,
+                          print_crop_marks = True):
+        """Generate the :term:`Page Map` of the PDF.
+
+        :param target_filename: If not ``None``, writes the :term:`Page Map` to
+          the indicated file.
+        :type target_filename: string
+
+        :param supress_warnings: If ``True``, will hide :term:`Warnings <Warning>`.
+        :type supress_warnings: bool
+
+        :param log_filename: If not ``None``, writes a copy of the log to the
+          file indicated.
+        :type log_filename: string
+
+        :param include_content: If ``True``, will print the PDF's content with
+          the :term:`Page Map` overlaid over it.
+        :type include_content: bool
+
+        :param include_labels: If ``True``, will print labels for
+          :term:`Content Targets <Content Target>`.
+        :type include_labels: bool
+
+        :param print_grid: If ``True``, will print the :term:`Page Grid` overlaid
+          above the PDF content.
+        :type print_grid: bool
+
+        :param print_crop_marks: If ``True``, will print :term:`Crop Marks` at
+          the margins of each page.
+
+        :returns: Binary data of the generated PDF.
+        :rtype: :ref:`io.BytesIO`
+
+        :raises IOError: If cannot write to either ``target_filename`` or
+          ``log_filename``.
+
+        :raises TypeError: If parameters are not of expected types.
+        """
+        if target_filename is not None and not isinstance(target_filename, str):
+            raise TypeError('target_filename expects a string')
+
+        if log_filename is not None and not isinstance(log_filename, str):
+            raise TypeError('log_filename expects a string')
+
+        if suppress_warnings is not None and not isinstance(suppress_warnings, bool):
+            raise TypeError('supress_warnings expects a bool')
+
+        if include_content is not None and not isinstance(include_content, bool):
+            raise TypeError('include_content expects a bool')
+
+        if include_labels is not None and not isinstance(include_labels, bool):
+            raise TypeError('include_labels expects a bool')
+
+        if print_grid is not None and not isinstance(print_grid, bool):
+            raise TypeError('print_grid expects a bool')
+
+        if print_crop_marks is not None and not isinstance(print_crop_marks, bool):
+            raise TypeError('print_crop_marks expects a bool')
+
+        raise NotImplementedError()
+
+        self.is_outdated = False
+
+    def apply_setting(self, name, value):
+        """Apply the value to the named setting.
+
+        :param name: The name of the setting to configure.
+        :type name: string
+
+        :param value: The value to apply to the setting.
+
+        :raises ValueError: If the ``value`` is invalid for the setting.
+
+        """
+        self.settings.apply_setting(name, value)
+        self.is_outdated = True
+
+
+
+class Singleton(object):
+    """A non-thread-safe helper class to ease implementing singletons.
+
     This should be used as a decorator -- not a metaclass -- to the
     class that should be a singleton.
 
@@ -42,16 +241,19 @@ class _PDFDesigner(object):
 
     To get the singleton instance, use the `Instance` method. Trying
     to use `__call__` will result in a `TypeError` being raised.
-    
+
     """
+
     def __init__(self, decorated):
+        """Create the Singleton."""
         self._decorated = decorated
 
     def Instance(self):
-        """
-        Returns the singleton instance. Upon its first call, it creates a
-        new instance of the decorated class and calls its `__init__` method.
-        On all subsequent calls, the already created instance is returned.
+        """Return the singleton instance.
+
+        Upon its first call, it creates a new instance of the decorated class
+          and calls its ``__init__`` method. On all subsequent calls, the already
+          created instance is returned.
 
         """
         try:
@@ -61,7 +263,9 @@ class _PDFDesigner(object):
             return self._instance
 
     def __call__(self):
+        """Raise a TypeError."""
         raise TypeError('Singletons must be accessed through `Instance()`.')
 
     def __instancecheck__(self, inst):
+        """Return ``True`` if ``inst`` is a :class:`Singleton`."""
         return isinstance(inst, self._decorated)

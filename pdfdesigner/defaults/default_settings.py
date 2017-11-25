@@ -12,6 +12,7 @@ from pdfdesigner.utilities import PropertyReference, is_boolean, is_string, \
     is_numeric, is_member, is_tuple, is_color, lowercase
 
 from pdfdesigner.design.layout.page_sizes import LETTER
+from pdfdesigner.design import units
 
 from reportlab.rl_settings import T1SearchPath as reportlab_T1SearchPath
 from reportlab.rl_settings import TTFSearchPath as reportlab_TTFSearchPath
@@ -288,7 +289,13 @@ _SETTINGS_DEFINITIONS = {
                                             'length': None,
                                             'expected_type': None
                                         },
-                                        None)
+                                        None),
+
+    'default_unit': PropertyReference(units.POINT,
+                                      None,
+                                      is_numeric,
+                                      None,
+                                      None)
 }
 
 
@@ -354,6 +361,26 @@ class PDFDesignerSettings(object):
             self._settings[name] = value
         else:
             super(self.__class__, self).__setattr__(name, value)
+
+    def apply_setting(self, name, value):
+        """Apply the value to the named setting.
+
+        :param name: The name of the setting to configure.
+        :type name: string
+
+        :param value: The value to apply to the setting.
+
+        :raises ValueError: If the ``value`` is invalid for the setting.
+
+        """
+        if name is not None and not isinstance(name, str):
+            raise TypeError('name expects a string')
+
+        normalized_name = name.lower()
+        if normalized_name not in _SETTINGS_DEFINITIONS:
+            raise ValueError('Seting ({name}) not a valid configuration setting.')
+
+        self.__setattr__(normalized_name, value)
 
     def get_reportlab_setting(self, name):
         """Convert a PDFDesigner Setting to its ReportLab key and value.
