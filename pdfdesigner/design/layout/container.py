@@ -7,6 +7,8 @@ pdfdesigner.design.layout.container
 Implements the base class for defining :term:`Containers <Container>.`
 
 """
+from collections import OrderedDict
+
 import pdfdesigner
 from pdfdesigner.design.content import ContentElement, Style
 from pdfdesigner.utilities import is_iterable, is_numeric
@@ -138,7 +140,7 @@ class Container(object):
 
         self.id = hash(name)
         self._name = name
-        self._contents = {}
+        self._contents = OrderedDict()
         self._content_ids = []
         self.origin_point = origin_point
         self._width = width
@@ -273,6 +275,11 @@ class Container(object):
                 raise ValueError('style ({}) is not present in the Stylesheet'
                                  .format(style))
             self._style = pdfdesigner.get_stylesheet()[style]
+
+    @property
+    def contents(self):
+        """Return the contents of the :class:`Container`."""
+        return self._contents
 
     @property
     def width(self):
