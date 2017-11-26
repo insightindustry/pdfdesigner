@@ -270,3 +270,14 @@ def convert_alignment(value):
                          .format(value = value))
 
     return conversion_dict[value]
+
+
+def increment_name(name,
+                 current_count = 0):
+    """Increment ``current_count`` and append it to ``name``."""
+    if not isinstance(name, str):
+        raise TypeError('name must be a string')
+
+    name += '_{}'.format(current_count + 1)
+
+    return name

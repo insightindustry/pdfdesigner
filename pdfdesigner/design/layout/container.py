@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 import pdfdesigner
 from pdfdesigner.design.content import ContentElement, Style
-from pdfdesigner.utilities import is_iterable, is_numeric
+from pdfdesigner.utilities import is_iterable, is_numeric, increment_name
 from pdfdesigner.utilities.constants import ORIGIN_POINTS
 
 
@@ -142,6 +142,7 @@ class Container(object):
         self._name = name
         self._contents = OrderedDict()
         self._content_ids = []
+        self._duplicate_content_counts = {}
         self.origin_point = origin_point
         self._width = width
         self._height = height
@@ -436,7 +437,9 @@ class Container(object):
             self.add_content_element(element)
 
     def add_content_element(self,
-                            content_element):
+                            content_element,
+                            overwrite = False,
+                            duplicate = True):
         """Add a single :class:`ContentElement` to the :class:`Container`.
 
         :param content_element: The :class:`ContentElement` that should be added
@@ -460,8 +463,25 @@ class Container(object):
                              .format(container = self.name,
                                      dimensions = self.dimensions))
 
+        original_id = content_element.id
+        if not overwrite and original_id in self._content_ids:
+            if duplicate:
+                is_duplicate = True
+                current_count = self._duplicate_content_counts[original_id]
+                new_name = increment_name(content_element.name,
+                                          current_count = current_count)
+                content_element.name = new_name
+            else:
+                raise ValueError('Content Element (name:{}) already exists '
+                                 .format(content_element.name) +
+                                 'within Container (name:{})'
+                                 .format(self.name))
+
         self._contents[content_element.id] = content_element
         self._content_ids.append(content_element.id)
+
+        if is_duplicate:
+            self._duplicate_content_counts[original_id] = current_count + 1
 
     def remove_content_element(self,
                                content_element,
