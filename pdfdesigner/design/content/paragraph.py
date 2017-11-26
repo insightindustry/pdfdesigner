@@ -9,8 +9,7 @@ Implements the class for defining a Paragraph.
 """
 from reportlab import platypus
 
-import pdfdesigner
-from pdfdesigner.design.content import Style, ContentElement
+from pdfdesigner.design.content import ContentElement
 from pdfdesigner.utilities import is_boolean
 
 
@@ -116,6 +115,14 @@ class Paragraph(ContentElement):
                         'alignment = "{}")'.format(self.alignment))
 
         return ''.join(return_tuple)
+
+    def __contains__(self, item):
+        """Return whether the Paragraph's text contains the ``item``."""
+        return item in self.text
+
+    def __getitem__(self, value):
+        """Slice the Paragraph's ``text`` as if it were a string."""
+        return self.text[value]
 
     @property
     def alignment(self):
