@@ -9,9 +9,17 @@ Glossary
 .. glossary::
 
   Bounding Box
-    The rectangular area that a given :term:`Design Target` or
+    The rectangular area that a given :term:`Container` or
     :term:`Content Element` takes up on a given :term:`Page`. It has a position,
     a width, a height.
+
+  Container
+    A rectangular area on a :term:`Page` that may contain one or more
+    :term:`Content Elements <Content Element>`.
+
+  Container Template
+    A set of repeatable instructions that can be applied to a
+    :term:`Container` which determine how the :term:`Container` is drawn.
 
   Content
 
@@ -26,14 +34,12 @@ Glossary
     be a paragraph of text, an image, etc.
 
   Design Target
-    A rectangular area on a :term:`Page` that may contain one or more
-    :term:`Content Elements <Content Element>`.
 
-  Design Target Template
-    A set of repeatable instructions that can be applied to a
-    :term:`Design Target` which determine how the :term:`Design Target` is
-    drawn.
+    |br|
 
+    .. seealso::
+
+      :term:`Container`
 
   Design Grid
     A grid pattern that can be drawn on your PDF when generated to aid in
@@ -41,12 +47,12 @@ Glossary
 
   Flow
     Flow occurs when a :term:`Content Element` will not fit in its
-    :term:`Design Target`, and therefore must be drawn in the next available
-    :term:`Design Target` in the related :term:`Story` or in the PDF.
+    :term:`Container`, and therefore must be drawn in the next available
+    :term:`Container` in the related :term:`Story` or in the PDF.
 
   Flowable Content
     A :term:`Content Element` that is allowed to :term:`flow <Flow>` across
-    :term:`Design Targets <Design Target>`.
+    :term:`Containers <Container>`.
 
   Frame
 
@@ -54,18 +60,18 @@ Glossary
 
     .. seealso::
 
-      :term:`Design Target`.
+      :term:`Container`.
 
   Page
     An object that corresponds to a single physical page (sheet of paper)
     within your PDF. What gets drawn on the page is a collection of
-    :term:`Design Targets <Design Target>`, which in turn contain
+    :term:`Containers <Container>`, which in turn contain
     :term:`Content Elements <Content Element>`.
 
   Page Map
     A rendering of a page where each the :term:`Bounding Box` of each
-    :term:`Design Target` is drawn. May also include the content contained in
-    the :term:`Design Target`, but does not have to.
+    :term:`Container` is drawn. May also include the content contained in
+    the :term:`Container`, but does not have to.
 
   Page Template
     A set of repeatable instructions that can be applied to a :term:`Page` which
@@ -85,7 +91,7 @@ Glossary
     methods.
 
   Story
-    A collection of :term:`Design Targets <Design Target>` whose
+    A collection of :term:`Containers <Container>` whose
     :term:`content <Content>` can :term:`flow <Flow>` across its members.
 
   Template
@@ -94,7 +100,7 @@ Glossary
 
     .. seealso::
 
-      :term:`Design Target Template`
+      :term:`Container Template`
 
       :term:`Page Template`
 

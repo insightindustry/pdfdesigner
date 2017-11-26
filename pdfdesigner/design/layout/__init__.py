@@ -15,11 +15,11 @@ Classes:
     :class:`Section` - Defines a collection of `Pages <:class:Page>`.
 
     :class:`Story` - Defines a collection of content that spans multiple
-    :term:`Design Targets <Design Target>`.
+    :term:`Containers <Container>`.
 
     :class:`Page` - Defines a single page that will be drawn within your PDF.
 
-    :class:`DesignTarget` - Defines a :term:`Design Target` where content will
+    :class:`Container` - Defines a :term:`Container` where content will
     be drawn within your PDF.
 
 """
@@ -27,11 +27,11 @@ Classes:
 #from .section import Section
 #from .story import Story
 #from .page import Page
-#from .design_target import DesignTarget
+#from .design_target import Container
 
 __all__ = [
     'Section',
     'Story',
     'Page',
-    'DesignTarget'
+    'Container'
 ]

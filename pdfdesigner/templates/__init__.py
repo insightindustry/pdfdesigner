@@ -20,18 +20,17 @@ Classes:
   :class:`StoryTemplate` - Defines instructions for drawing
   :term:`Stories <Story>`.
 
-  :class:`DesignTargetTemplate` - Defines instructions for drawing a
-  :term:`Design Target`.
+  :class:`ContainerTemplate` - Defines instructions for drawing a :term:`Container`.
 """
 
 #from .section_template import SectionTemplate
 #from .page_template import PageTemplate
 #from .story_template import StoryTemplate
-#from .design_target_template import DesignTargetTemplate
+#from .design_target_template import ContainerTemplate
 
 __all__ = [
     'SectionTemplate',
     'PageTemplate',
     'StoryTemplate',
-    'DesignTargetTemplate'
+    'ContainerTemplate'
 ]
