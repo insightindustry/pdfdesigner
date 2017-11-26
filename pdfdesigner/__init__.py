@@ -134,3 +134,14 @@ def get_container(item_id,
     :rtype: :class:`Container` / ``None`` / tuple
     """
     raise NotImplementedError()
+
+
+def get_page(page_number):
+    """Return the :class:`Page` with the given ``page_number``.
+
+    :param page_number: The page number of the :class:`Page` to return.
+    :type page_number: int
+
+    :rtype: :class:`Page` or ``None``.
+    """
+    raise NotImplementedError()
