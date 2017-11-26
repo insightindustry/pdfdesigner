@@ -23,14 +23,14 @@ Constants:
     used by PDFDesigner.
 """
 
+from .default_colors import DEFAULT_COLORS
 from .default_settings import DEFAULT_SETTINGS
 from .default_styles import DEFAULT_STYLESHEET
 #from .default_templates import DEFAULT_TEMPLATES
-#from .default_colors import DEFAULT_COLORS
 
 __all__ = [
+    'DEFAULT_COLORS',
     'DEFAULT_SETTINGS',
-    'DEFAULT_STYLES',
-    'DEFAULT_TEMPLATES',
-    'DEFAULT_COLORS'
+    'DEFAULT_STYLESHEET',
+    'DEFAULT_TEMPLATES'
 ]

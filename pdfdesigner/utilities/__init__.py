@@ -17,6 +17,11 @@ from numbers import Number
 from decimal import Decimal
 from keyword import iskeyword
 
+from pdfdesigner.defaults import DEFAULT_COLORS
+
+from reportlab.lib.colors import Color, HexColor
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER, TA_JUSTIFY
+
 #: A named tuple which defines a property that may or may not map to a ReportLab setting.
 PropertyReference = namedtuple('PropertyReference',
                                'default reportlab_key validation parameters conversion')
@@ -167,9 +172,32 @@ def is_member(value, iterable, allow_none = False):
 
     return value in iterable
 
+
 def is_color(value, allow_none = False):
     """Check whether the ``value`` is a valid color."""
-    raise NotImplementedError
+    if value is None:
+        return allow_none
+
+    if isinstance(value, Color):
+        is_valid = True
+
+    if isinstance(value, str) and value in DEFAULT_COLORS:
+        is_valid = True
+    elif isinstance(value, str):
+        try:
+            color = HexColor(value)
+            is_valid = True
+        except (TypeError, ValueError):
+            is_valid = False
+
+    if is_iterable(value, min_length = 3, max_length = 4):
+        try:
+            color = Color(**value)
+            is_valid = True
+        except (TypeError, ValueError):
+            is_valid = False
+
+    return is_valid
 
 
 def make_lowercase(value):
@@ -195,3 +223,50 @@ def make_identifier(value, lowercase = True):
         value = re.sub('^[^a-zA-Z_]+', '', value)
 
     return value
+
+
+def hex_to_rgb(hex_color, percentage = False):
+    """Return a tuple of form ``(red, green, blue)`` representing the color.
+
+    :param hex_color: The color expressed in hexadecimal.
+    :type hex_color: string
+
+    :param percentage: Indicates that the RGB value returned should be expressed
+      as a percentage of the color gradient (e.g. white would be R:1, G:1, B:1
+      and not R:255, G:255, B:255).
+    :type percentage: bool
+
+    :returns: The color expressed as ``(red, green, blue)``.
+    :rtype: tuple
+    """
+    hex_color = hex_color.lstrip('#')
+    length = len(hex_color)
+    return_value = tuple(int(hex_color[i:i + length // 3], 16) for i in range(0,
+                                                                              length,
+                                                                              length // 3)
+                         )
+
+    if percentage is True:
+        red = return_value[0] / 255
+        green = return_value[1] / 255
+        blue = return_value[2] / 255
+
+        return_value = (red, green, blue)
+
+    return return_value
+
+
+def convert_alignment(value):
+    """Return a ReportLab Platypus-compatible alignment value."""
+    conversion_dict = {
+        'LEFT': TA_LEFT,
+        'RIGHT': TA_RIGHT,
+        'CENTER': TA_CENTER,
+        'JUSTIFY': TA_JUSTIFY
+    }
+
+    if value not in conversion_dict:
+        raise ValueError('value ({value}) is not a valid alignment'
+                         .format(value = value))
+
+    return conversion_dict[value]
