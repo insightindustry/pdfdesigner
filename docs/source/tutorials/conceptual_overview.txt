@@ -28,8 +28,8 @@ recommended ``import`` pattern:
 
   import pdfdesigner
   from pdfdesigner.defaults import DEFAULT_SETTINGS, DEFAULT_STYLES, DEFAULT_TEMPLATES, DEFAULT_COLORS
-  from pdfdesigner.templates import SectionTemplate, PageTemplate, DesignTargetTemplate
-  from pdfdesigner.design.layout import Section, Story, Page, DesignTarget
+  from pdfdesigner.templates import SectionTemplate, PageTemplate, ContainerTemplate
+  from pdfdesigner.design.layout import Section, Story, Page, Container
   from pdfdesigner.design.content import Paragraph, Table, Image
   from pdfdesigner.design.units import POINT, PICA, MM, CM, INCH
 
@@ -44,7 +44,7 @@ templates
 
   * :term:`Section Templates <Section Template>`
   * :term:`Page Templates <Page Template>`
-  * :term:`DesignTargetTemplate <Design Target Template>`
+  * :term:`ContainerTemplate <Container Template>`
 
   which are used to simplify design.
 
@@ -59,7 +59,7 @@ design
     * :term:`Sections <Section>`
     * :term:`Pages <Page>`
     * :term:`Stories <Story>`
-    * :term:`Design Targets <Design Target>`
+    * :term:`Containers <Container>`
 
   content
     Contains modules and classes that are used to instantiate the

@@ -55,7 +55,7 @@ Why PDFDesigner?
   generation, I tend to consider them "fiddly".
 
   For one thing, the `PLATYPUS`_ layout engine works by iterating over lists
-  of :term:`Design Targets <Design Target>` (called ``Frames`` in their
+  of :term:`Containers <Container>` (called ``Frames`` in their
   parlance) and within each frame over lists of :term:`Flowable Content`
   (called ``Flowables`` in their parlance). If you have a complicated design,
   that may lead to the creation of very long, hard-to-write, hard-to-read

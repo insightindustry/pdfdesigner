@@ -17,6 +17,7 @@ class Paragraph(ContentElement):
     """:term:`Content Element` that contains text only."""
 
     def __init__(self,
+                 name,
                  text,
                  style = None,
                  bullet = None,
@@ -82,7 +83,7 @@ class Paragraph(ContentElement):
           the :class:`Style` object's configured alignment.
         :type alignment: string, member of: ('LEFT', 'CENTER', 'RIGHT', 'JUSTIFY')
         """
-        super(self.__class__, self).__init__(style)
+        super(self.__class__, self).__init__(name, style)
 
         self.text = text
         self._list_position = list_position
@@ -116,6 +117,10 @@ class Paragraph(ContentElement):
 
         return ''.join(return_tuple)
 
+    def __str__(self):
+        """Return the contents of the :class:`Paragraph`."""
+        return self.text
+
     def __contains__(self, item):
         """Return whether the Paragraph's text contains the ``item``."""
         return item in self.text
@@ -123,6 +128,20 @@ class Paragraph(ContentElement):
     def __getitem__(self, value):
         """Slice the Paragraph's ``text`` as if it were a string."""
         return self.text[value]
+
+    def get_required_height(self, width = None):
+        """Return the object's minimum required height to be drawn completely.
+
+        :param width: The width to assume when calculating the required height.
+        :type width: numeric
+
+        :returns: ``None`` if paragraph is :term:`Flowable Content`. Otherwise
+          the height required.
+        """
+        if self.is_flowable:
+            return None
+
+        raise NotImplementedError()
 
     @property
     def alignment(self):

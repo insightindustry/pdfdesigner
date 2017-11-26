@@ -108,8 +108,7 @@ def get_page_number(item_id,
 
 
 def get_component(item_id):
-    """Return the :term:`Content Element` or :term:`Design Target` identified
-      by ``item_id``.
+    """Return the :term:`Content Element` or :term:`Container` identified by ``item_id``.
 
     :param item_id: The ``id`` of the object who's page number should be returned.
 
@@ -121,17 +120,28 @@ def get_component(item_id):
 
 def get_container(item_id,
                   first_only = False):
-    """Return the :term:`Design Target` that contains the :class:`ContentElement`
+    """Return the :class:`Container` that contains the :class:`ContentElement`
       identified by ``item_id``.
 
     :param item_id: The ``id`` of the :class:`ContentElement` who's container
       should be returned.
 
-    :param first_only: If ``True``, returns the first :class:`DesignTarget` where
+    :param first_only: If ``True``, returns the first :class:`Container` where
       the :class:`ContentElement` appears. If ``False``, returns a tuple with all
       of them.
 
-    :returns: The :class:`DesignTarget` identified by ``item_id``.
-    :rtype: :class:`DesignTarget` / ``None`` / tuple
+    :returns: The :class:`Container` identified by ``item_id``.
+    :rtype: :class:`Container` / ``None`` / tuple
+    """
+    raise NotImplementedError()
+
+
+def get_page(page_number):
+    """Return the :class:`Page` with the given ``page_number``.
+
+    :param page_number: The page number of the :class:`Page` to return.
+    :type page_number: int
+
+    :rtype: :class:`Page` or ``None``.
     """
     raise NotImplementedError()
