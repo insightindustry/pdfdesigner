@@ -17,7 +17,12 @@ class ContentElement(object):
 
     def __init__(self,
                  style = None):
-        """Create the :class:`ContentElement` and populate basic attributes."""
+        """Create the :class:`ContentElement` and populate basic attributes.
+
+        :param style: The :class:`Style` which should be applied to the
+          :class:`ContentElement`.
+        :type style: :class:`Style`
+        """
         self.id = uuid.uuid4()
         self._style = None
         self._has_flowed = False
