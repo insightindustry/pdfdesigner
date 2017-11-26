@@ -137,7 +137,7 @@ class Container(object):
                              'and origin_coordinate.')
 
         self.id = hash(name)
-        self.name = name
+        self._name = name
         self._contents = {}
         self._content_ids = []
         self.origin_point = origin_point
@@ -235,6 +235,17 @@ class Container(object):
         self.remove_content_element(other)
 
         return self
+
+    @property
+    def name(self):
+        """Return the human-readable name of the :class:`Container`."""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        """Set the value of the human-readable name of the :class:`Container`."""
+        self._name = value
+        self.id = hash(value)
 
     @property
     def style(self):
