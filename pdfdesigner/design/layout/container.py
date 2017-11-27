@@ -138,11 +138,11 @@ class Container(object):
             raise ValueError('Container cannot have both transform_coordinates ' +
                              'and origin_coordinate.')
 
-        self.id = hash(name)
         self._name = name
         self._contents = OrderedDict()
         self._content_ids = []
         self._duplicate_content_counts = {}
+        self._duplicate_id_original_mapping = {}
         self.origin_point = origin_point
         self._width = width
         self._height = height
@@ -238,6 +238,15 @@ class Container(object):
         self.remove_content_element(other)
 
         return self
+
+    @property
+    def id(self):
+        """Return a numerical ID for the Container."""
+        if self.page_number is None:
+            return hash(self._name)
+
+        return hash('{}_{}'.format(self.page_number,
+                                   self._name))
 
     @property
     def name(self):
@@ -482,6 +491,7 @@ class Container(object):
 
         if is_duplicate:
             self._duplicate_content_counts[original_id] = current_count + 1
+            self._duplicate_id_original_mapping[content_element.id] = original_id
 
     def remove_content_element(self,
                                content_element,
