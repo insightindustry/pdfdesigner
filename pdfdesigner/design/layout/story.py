@@ -14,11 +14,19 @@ from pdfdesigner.utilities import is_iterable, increment_name
 from pdfdesigner.design.layout import Container
 from pdfdesigner.design.content import ContentElement
 
+
 class Story(object):
     """Object representation of a :term:`Story`.
 
     A collection of :class:`Container` objects and associated
       :class:`ContentElement` objects which comprise a logical unit.
+
+    The primary role of a :term:`Story` is to group a series of
+      :class:`Containers <Container>` objects into a single whole.
+      :term:`Flowable Content` that is assigned to the :term:`Story` will be
+      drawn in the :class:`Story's <Story>` :class:`Containers <Container>` in
+      order, regardless of the page on which a given :class:`Container` may be
+      drawn.
 
     """
 
@@ -41,21 +49,23 @@ class Story(object):
 
           .. note::
 
-            If both ``containers`` and ``contents`` are given, then the contents
-            of the :class:`Container` objects in ``containers`` will be added first,
-            followed by the :class:`ContentElement` objects in ``contents``.
+            **Order matters!** The :class:`Container` objects will be processed
+            in order, and if a given :class:`Container` has :class:`ContentElement`
+            objects associated with it, those objects will be processed in order
+            as well.
 
-        :type containers: Iterable of :class:`Container` objects
+          .. caution::
 
-        :param content: The :class:`ContentElement` objects that comprise the
-          :term:`Story`.
+            By adding a :class:`Container` to a :class:`Story`, you will de-associate
+            any associated :class:`ContentElement` objects. This means that if
+            you really want your third :class:`Paragraph` to appear in your second
+            :class:`Container`, you should not include either in a :class:`Story`.
 
-          .. note::
+        :type containers: Order-sensitive iterable of :class:`Container` objects
 
-            If ``None``, then will be assumed to the be superset of
-            :ref:`Container.contents` from containers included in the Story.
-
-        :type content: Iterable of :class:`ContentElement` objects.
+        :param content: :class:`ContentElement` objects that are not already
+          associated with any :class:`Container` object.
+        :type content: Order-sensitive iterable of :class:`ContentElement` objects.
 
         """
         self.id = hash(name)
@@ -127,7 +137,7 @@ class Story(object):
         """
         if not is_iterable(containers, min_length = 1) and \
            not isinstance(containers, Container):
-            raise TypeError('containers must be a single Container object, or an iterable')
+            raise TypeError('containers must be a single Container object or iterable')
 
         if is_iterable(containers, min_length = 1):
             for item in containers:
@@ -229,9 +239,13 @@ class Story(object):
 
         if is_iterable(content_elements):
             for item in content_elements:
-                self.add_content_element(item)
+                self.add_content_element(item,
+                                         overwrite = overwrite,
+                                         duplicate = duplicate)
         else:
-            self.add_content_element(content_elements)
+            self.add_content_element(content_elements,
+                                     overwrite = overwrite,
+                                     duplicate = duplicate)
 
     def add_content_element(self,
                             content_element,
@@ -339,9 +353,9 @@ class Story(object):
         is_duplicated = content_element.id in self._duplicate_content_counts
 
         if remove_duplicates and is_duplicated:
-            for x in range(0, self._duplicate_content_counts[content_element.id]):
+            for index in range(0, self._duplicate_content_counts[content_element.id]):
                 new_name = increment_name(content_element.name,
-                                          x)
+                                          index)
                 new_id = hash(new_name)
                 self.remove_content_element(new_id,
                                             remove_duplicates = False)
@@ -351,7 +365,10 @@ class Story(object):
                 original_id = self._duplicate_id_original_mapping[content_element.id]
 
                 current_duplicate_count = self._duplicate_content_counts[original_id]
-                self._duplicate_content_counts[original_id] = current_duplicate_count - 1
+                if current_duplicate_count > 0:
+                    self._duplicate_content_counts[original_id] = current_duplicate_count - 1
+                else:
+                    self._duplicate_content_counts.pop(original_id, None)
 
                 self._duplicate_id_original_mapping.pop(content_element.id, None)
 
