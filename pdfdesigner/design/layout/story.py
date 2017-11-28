@@ -10,7 +10,7 @@ Implements the base class for defining :term:`Stories <Story>.`
 from collections import OrderedDict
 
 import pdfdesigner
-from pdfdesigner.utilities import is_iterable, increment_name
+from pdfdesigner.utilities import is_iterable, remove_relative_item
 from pdfdesigner.design.layout import Container
 from pdfdesigner.design.content import ContentElement
 
@@ -218,6 +218,15 @@ class Story(object):
 
         return None
 
+    @property
+    def containers(self):
+        """Return the :class:`Containers <Container>` used by this :class:`Story`.
+
+        :returns: The set of :class:`Container` objects used by this :class:`Story`.
+        :rtype: ref:`OrderedDict`
+        """
+        return self._containers
+
     def add_contents(self,
                      content_elements,
                      overwrite = False,
@@ -419,3 +428,35 @@ class Story(object):
             else:
                 self._content_ids.remove(content_element.id)
                 return self._contents.pop(content_element.id, None)
+
+    @property
+    def contents(self):
+        """Return the :class:`ContentElements <ContentElement>` used by this :class:`Story`.
+
+        :returns: The full set of :class:`ContentElement` objects that will be
+          rendered within this :class:`Story`.
+
+          .. note::
+
+            The list returned will include any :class:`ContentElement` objects
+            that are duplicated within the :class:`Story`.
+
+        :rtype: list
+        """
+        return [self._contents[item] for item in self._content_ids]
+
+    @property
+    def content_ids(self):
+        """Return the identifiers of content displayed by this :class:`Story`.
+
+        :returns: The full set of identifiers for the :class:`ContentElement`
+          objects that will be rendered within this :class:`Story`.
+
+          .. note::
+
+            The list returned will include repeat identifiers if they repeat
+            within the :class:`Story`.
+
+        :rtype: list
+        """
+        return self._content_ids
