@@ -228,11 +228,15 @@ class Story(object):
           the :class:`Story`. Their order matters.
         :type content_elements: :class:`ContentElement`` object / Iterable  of
           :class:`ContentElement` objects.
-          
-        :param overwrite: Determines whether a previously added :class:`ContentElement` with the same ``id`` will be replaced by the instance being added.
+
+        :param overwrite: Determines whether a previously added
+          :class:`ContentElement` with the same ``id`` will be replaced by the
+          instance being added.
         :type overwrite: bool
-        
-        :param duplicate: Determines whether to add a new instance of the :class:`ContentElement` if a previous one with the same ``id`` is already present.
+
+        :param duplicate: Determines whether to add a new instance of the
+          :class:`ContentElement` if a previous one with the same ``id`` is
+          already present.
         :type duplicate: bool
 
         """
@@ -263,28 +267,32 @@ class Story(object):
           checked to determine duplication. Here's what this means in a practical
           example::
 
-            first_paragraph(name = 'duplicating_paragraph', text = 'my original paragraph')
-            second_paragraph(name = 'duplicating_paragraph', text = 'my second paragraph')
-            
+            first_paragraph(name='duplicating_paragraph', text='my original paragraph')
+            second_paragraph(name='duplicating_paragraph', text='my second paragraph')
+
             story.add_content(first_paragraph)
             # Will now draw one paragraph that reads "my original paragraph"
-            
+
             story.add_content(second_paragraph, overwrite=False, duplicate=True)
             # Will now produce two paragraphs that both read "my original paragraph"
-            
+
             story.add_content(second_paragraph, overwrite=True, duplicate=False)
-            # Will produce two paragraphs that all read "my second paragraph"
-            
+            # Will produce two paragraphs that both read "my second paragraph"
+
             story.add_content(second_paragraph, overwrite=False, duplicate=False)
             # Will raise a ValueError
 
         :param content_element: The :class:`ContentElement` to add.
         :type content_element: :class:`ContentElement`
-        
-        :param overwrite: Determines whether a previously added :class:`ContentElement` with the same ``id`` will be replaced by the instance being added.
+
+        :param overwrite: Determines whether a previously added
+          :class:`ContentElement` with the same ``id`` will be replaced by the
+          instance being added.
         :type overwrite: bool
-        
-        :param duplicate: Determines whether to add a new instance of the :class:`ContentElement` if a previous one with the same ``id`` is already present.
+
+        :param duplicate: Determines whether to add a new instance of the
+          :class:`ContentElement` if a previous one with the same ``id`` is
+          already present in the :class:`Story`.
         :type duplicate: bool
         """
         if not isinstance(content_element, ContentElement):
@@ -298,7 +306,7 @@ class Story(object):
         if not is_duplicating or (is_duplicating and duplicate is True):
             self._content_ids.append(content_element.id)
         elif is_duplicating and overwrite is False and duplicate is False:
-            raise ValueError('content (id:{}) already exists, but both overwrite '
+            raise ValueError('content (id:{}) already present, but both overwrite '
                              .format(content_element.id) +
                              'and duplicate are set to False')
 
@@ -358,8 +366,11 @@ class Story(object):
 
         :param content_element: The :class:`ContentElement` to remove.
         :type content_elements: :class:`ContentElement`
-        
-        :param relative_position: If not ``None``, the index of the :class:`ContentElement` instance whose `id` matches that will be removed from the story. For example, a value of 1 will remove the second appearance of ``content_element`` but leave the first.
+
+        :param relative_position: If not ``None``, the index of the
+          :class:`ContentElement` instance whose `id` matches that will be
+          removed from the story. For example, a value of 1 will remove the
+          second appearance of ``content_element`` but leave the first.
         :type relative_position: int
 
         :param remove_duplicates: If ``True``, will also remove other
@@ -368,6 +379,13 @@ class Story(object):
 
         :returns: The :class:`ContentElement` object removed, or ``None`` if not found.
         :rtype: :class:`ContentElement` / ``None``
+
+        :raises TypeError: If ``content_element`` is not a :class:`ContentElement`,
+          int, or string.
+        :raises ValueError: If unable to determine which member of
+          :ref:`Story.content_ids` should be removed. For example, if
+          ``content_element.id`` repeats within the :class:`Story`, but
+          ``relative_position`` is ``None`` and ``remove_duplicates`` is ``False``.
 
         """
         if isinstance(content_element, int) or isinstance(content_element, str):
@@ -378,7 +396,7 @@ class Story(object):
         instance_count = self._content_ids.count(content_element.id)
         if instance_count == 0:
             return None
-            
+
         is_duplicated = instance_count > 1
         if remove_duplicates:
             self._content_ids = [x for x in self._content_ids if x != content_element.id]
@@ -386,12 +404,18 @@ class Story(object):
         else:
             if relative_position > instance_count:
                 return None
-            
+
             if is_duplicated and relative_position is not None:
-                self._content_ids = remove_relative_item(self._content_ids, item = content_element.id, relative_position = relative_position)
+                self._content_ids = remove_relative_item(self._content_ids,
+                                                         item = content_element.id,
+                                                         relative_position = relative_position)
                 return self._contents[content_element.id]
             elif is_duplicated:
-                raise ValueError('ContentElement (id:{}) has duplicates, but relative_position is None and remove_duplicates is False'.format(content_element.id))
+                raise ValueError('ContentElement (id:{}) has duplicates, but '
+                                 .format(content_element.id) +
+                                 'unclear which item to remove because both ' +
+                                 'relative_position is None and ' +
+                                 'remove_duplicates is False')
             else:
                 self._content_ids.remove(content_element.id)
                 return self._contents.pop(content_element.id, None)
