@@ -84,7 +84,7 @@ class Story(object):
             self.add_containers(containers)
 
         if content is not None:
-            self.add_content_elements(content)
+            self.add_contents(content)
 
     def __repr__(self):
         """Return a string representation of the object."""
@@ -155,7 +155,7 @@ class Story(object):
         page_number = pdfdesigner.get_page_number(container.id)
         self._container_page_mapping[container.id] = page_number
 
-        self.add_content_elements(container.contents)
+        self.add_contents(container.contents)
 
     def get_container(self,
                       container_id,
@@ -209,8 +209,8 @@ class Story(object):
 
         if container.id in self._container_ids:
             if remove_contents:
-                self.remove_content_elements(container,
-                                             remove_duplicates = False)
+                self.remove_contents(container,
+                                     remove_duplicates = False)
 
             self._container_ids.remove(container.id)
             self._container_page_mapping.pop(container.id, None)
@@ -218,16 +218,22 @@ class Story(object):
 
         return None
 
-    def add_content_elements(self,
-                             content_elements,
-                             overwrite = False,
-                             duplicate = True):
+    def add_contents(self,
+                     content_elements,
+                     overwrite = False,
+                     duplicate = True):
         """Add :class:`ContentElement` objects to the :class:`Story`.
 
         :param content_elements: The :class:`ContentElement` objects to add to
           the :class:`Story`. Their order matters.
         :type content_elements: :class:`ContentElement`` object / Iterable  of
           :class:`ContentElement` objects.
+          
+        :param overwrite: Determines whether a previously added :class:`ContentElement` with the same ``id`` will be replaced by the instance being added.
+        :type overwrite: bool
+        
+        :param duplicate: Determines whether to add a new instance of the :class:`ContentElement` if a previous one with the same ``id`` is already present.
+        :type duplicate: bool
 
         """
         if not isinstance(content_elements, ContentElement) and \
@@ -237,18 +243,18 @@ class Story(object):
 
         if is_iterable(content_elements):
             for item in content_elements:
-                self.add_content_element(item,
-                                         overwrite = overwrite,
-                                         duplicate = duplicate)
+                self.add_content(item,
+                                 overwrite = overwrite,
+                                 duplicate = duplicate)
         else:
-            self.add_content_element(content_elements,
-                                     overwrite = overwrite,
-                                     duplicate = duplicate)
+            self.add_content(content_elements,
+                             overwrite = overwrite,
+                             duplicate = duplicate)
 
-    def add_content_element(self,
-                            content_element,
-                            overwrite = False,
-                            duplicate = True):
+    def add_content(self,
+                    content_element,
+                    overwrite = False,
+                    duplicate = True):
         """Add a :class:`ContentElement` to the :class:`Story`.
 
         .. note::
@@ -260,16 +266,16 @@ class Story(object):
             first_paragraph(name = 'duplicating_paragraph', text = 'my original paragraph')
             second_paragraph(name = 'duplicating_paragraph', text = 'my second paragraph')
             
-            story.add_content_element(first_paragraph)
+            story.add_content(first_paragraph)
             # Will now draw one paragraph that reads "my original paragraph"
             
-            story.add_content_element(second_paragraph, overwrite=False, duplicate=True)
+            story.add_content(second_paragraph, overwrite=False, duplicate=True)
             # Will now produce two paragraphs that both read "my original paragraph"
             
-            story.add_content_element(second_paragraph, overwrite=True, duplicate=False)
+            story.add_content(second_paragraph, overwrite=True, duplicate=False)
             # Will produce two paragraphs that all read "my second paragraph"
             
-            story.add_content_element(second_paragraph, overwrite=False, duplicate=False)
+            story.add_content(second_paragraph, overwrite=False, duplicate=False)
             # Will raise a ValueError
 
         :param content_element: The :class:`ContentElement` to add.
@@ -296,9 +302,9 @@ class Story(object):
                              .format(content_element.id) +
                              'and duplicate are set to False')
 
-    def get_content_element(self,
-                            content_element_id,
-                            fail_silently = True):
+    def get_content(self,
+                    content_element_id,
+                    fail_silently = True):
         """Return the :class:`ContentElement` object provided in ``content_element_id``.
 
         :param content_element_id: Identifier or name of the :class:`ContentElement`
@@ -327,9 +333,9 @@ class Story(object):
 
         return None
 
-    def remove_content_elements(self,
-                                content_elements,
-                                remove_duplicates = True):
+    def remove_contents(self,
+                        content_elements,
+                        remove_duplicates = True):
         """Remove content elements in ``content_elements`` from the :class:`Story`.
 
         :param content_elements: Iterable collection of :class:`ContentElement`
@@ -341,16 +347,20 @@ class Story(object):
         :type remove_duplicates: bool
         """
         for item in content_elements:
-            self.remove_content_element(item,
-                                        remove_duplicates = remove_duplicates)
+            self.remove_content(item,
+                                remove_duplicates = remove_duplicates)
 
-    def remove_content_element(self,
-                               content_element,
-                               remove_duplicates = True):
+    def remove_content(self,
+                       content_element,
+                       relative_position = None,
+                       remove_duplicates = True):
         """Remove the ``content_element`` from the :class:`Story`.
 
         :param content_element: The :class:`ContentElement` to remove.
         :type content_elements: :class:`ContentElement`
+        
+        :param relative_position: If not ``None``, the index of the :class:`ContentElement` instance whose `id` matches that will be removed from the story. For example, a value of 1 will remove the second appearance of ``content_element`` but leave the first.
+        :type relative_position: int
 
         :param remove_duplicates: If ``True``, will also remove other
           :class:`ContentElement` objets which are duplicates of the one supplied.
@@ -361,34 +371,27 @@ class Story(object):
 
         """
         if isinstance(content_element, int) or isinstance(content_element, str):
-            content_element = self.get_content_element(content_element)
+            content_element = self.get_content(content_element)
         elif not isinstance(content_element, ContentElement):
             raise TypeError('content_element must be a ContentElement, int, or string.')
 
-        is_duplicate = content_element.id in self._duplicate_id_original_mapping
-        is_duplicated = content_element.id in self._duplicate_content_counts
-
-        if remove_duplicates and is_duplicated:
-            for index in range(0, self._duplicate_content_counts[content_element.id]):
-                new_name = increment_name(content_element.name,
-                                          index)
-                new_id = hash(new_name)
-                self.remove_content_element(new_id,
-                                            remove_duplicates = False)
-
-        if content_element.id in self._content_ids:
-            if is_duplicate:
-                original_id = self._duplicate_id_original_mapping[content_element.id]
-
-                current_duplicate_count = self._duplicate_content_counts[original_id]
-                if current_duplicate_count > 0:
-                    self._duplicate_content_counts[original_id] = current_duplicate_count - 1
-                else:
-                    self._duplicate_content_counts.pop(original_id, None)
-
-                self._duplicate_id_original_mapping.pop(content_element.id, None)
-
-            self._content_ids.remove(content_element.id)
+        instance_count = self._content_ids.count(content_element.id)
+        if instance_count == 0:
+            return None
+            
+        is_duplicated = instance_count > 1
+        if remove_duplicates:
+            self._content_ids = [x for x in self._content_ids if x != content_element.id]
             return self._contents.pop(content_element.id, None)
-
-        return None
+        else:
+            if relative_position > instance_count:
+                return None
+            
+            if is_duplicated and relative_position is not None:
+                self._content_ids = remove_relative_item(self._content_ids, item = content_element.id, relative_position = relative_position)
+                return self._contents[content_element.id]
+            elif is_duplicated:
+                raise ValueError('ContentElement (id:{}) has duplicates, but relative_position is None and remove_duplicates is False'.format(content_element.id))
+            else:
+                self._content_ids.remove(content_element.id)
+                return self._contents.pop(content_element.id, None)
