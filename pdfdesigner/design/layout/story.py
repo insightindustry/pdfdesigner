@@ -79,8 +79,6 @@ class Story(object):
 
         self._contents = OrderedDict()
         self._content_ids = []
-        self._duplicate_content_counts = {}
-        self._duplicate_id_original_mapping = {}
 
         if containers is not None:
             self.add_containers(containers)
@@ -253,32 +251,32 @@ class Story(object):
                             duplicate = True):
         """Add a :class:`ContentElement` to the :class:`Story`.
 
+        .. note::
+
+          Duplication is determined by :ref`ContentElement.id`. Content is not
+          checked to determine duplication. Here's what this means in a practical
+          example::
+
+            first_paragraph(name = 'duplicating_paragraph', text = 'my original paragraph')
+            second_paragraph(name = 'duplicating_paragraph', text = 'my second paragraph')
+
+        .. todo::
+
+          Finish documenting the duplication logic.
+
         :param content_element: The :class:`ContentElement` to add.
         :type content_element: :class:`ContentElement`
         """
         if not isinstance(content_element, ContentElement):
             raise TypeError('content_element must be a ContentElement')
 
-        original_id = content_element.id
-        if not overwrite and original_id in self._content_ids:
-            if duplicate:
-                is_duplicate = True
-                current_count = self._duplicate_content_counts[original_id]
-                new_name = increment_name(content_element.name,
-                                          current_count = current_count)
-                content_element.name = new_name
-            else:
-                raise ValueError('Content Element (name:{}) already exists '
-                                 .format(content_element.name) +
-                                 'within Story (name:{})'
-                                 .format(self.name))
+        is_duplicating = content_element.id in self._content_ids
 
-        self._contents[content_element.id] = content_element
-        self._content_ids.append(content_element.id)
+        if overwrite is True or not is_duplicating:
+            self._contents[content_element.id] = content_element
 
-        if is_duplicate:
-            self._duplicate_content_counts[original_id] = current_count + 1
-            self._duplicate_id_original_mapping[content_element.id] = original_id
+        if not is_duplicating or (is_duplicating and duplicate is True):
+            self._content_ids.append(content_element.id)
 
     def get_content_element(self,
                             content_element_id,
