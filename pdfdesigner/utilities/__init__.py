@@ -281,3 +281,64 @@ def increment_name(name,
     name += '_{}'.format(current_count + 1)
 
     return name
+
+
+def remove_relative_item(iterable,
+                         relative_position,
+                         item = None):
+    """Return the list having removed the ``item`` at the ``relative_position``.
+
+    :param iterable: The iterable object from which the ``item`` has been removed.
+    :type iterable: iterable
+
+    :param relative_position: The zero-indexed position of the item relative to
+      its duplicates in the iterable that will be removed.  For example, if an
+      item appears in the iterable 3 times, and ``relative_position = 1``, then
+      the second appearance of the ``item`` will be removed and the list returned
+      will have ``3 - 1 = 2`` appearances of the ``item``.
+
+    :param item: The item to be removed from the ``iterable``.
+
+    :returns: List whose contents match ``iterable`` without the ``item`` removed.
+    :rtype: list
+
+    :raises TypeError: If ``iterable`` is not an iterable object, or
+      ``relative_position`` is not an integer.
+    :raises ValueError: If ``relative_position`` is None.
+    """
+    if not is_iterable(iterable):
+        raise TypeError('iterable must be an iterable object.')
+    if relative_position is not None and not is_numeric(relative_position):
+        raise TypeError('relative_position must be an integer.')
+    if relative_position is None:
+        raise ValueError('relative_position cannot be None. Use .remove() or ' +
+                         '.pop() instead.')
+
+    appearance_count = iterable.count(item)
+    if relative_position > appearance_count or appearance_count == 0:
+        return iterable
+
+    appearance_indexes = get_indexes(iterable, item)
+    index_to_remove = appearance_indexes[relative_position]
+
+    return [member for index, member in enumerate(iterable) if index != index_to_remove]
+
+
+def get_indexes(iterable, item):
+    """Return a list of the index positions where ``item`` appears in ``iterable``.
+
+    :param iterable: The iterable to search for ``item``.
+    :type iterable: iterable
+
+    :param item: The value to search for in ``iterable``.
+
+    :returns: List of zero-indexed index positions within ``iterable`` where
+      ``item`` appears.
+    :rtype: list
+
+    :raises TypeError: If ``iterable`` is not iterable.
+    """
+    if not is_iterable(iterable):
+        raise TypeError('iterable must be iterable.')
+
+    return [index for index, member in iterable if member == item]
