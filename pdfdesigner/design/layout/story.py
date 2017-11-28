@@ -259,13 +259,27 @@ class Story(object):
 
             first_paragraph(name = 'duplicating_paragraph', text = 'my original paragraph')
             second_paragraph(name = 'duplicating_paragraph', text = 'my second paragraph')
-
-        .. todo::
-
-          Finish documenting the duplication logic.
+            
+            story.add_content_element(first_paragraph)
+            # Will now draw one paragraph that reads "my original paragraph"
+            
+            story.add_content_element(second_paragraph, overwrite=False, duplicate=True)
+            # Will now produce two paragraphs that both read "my original paragraph"
+            
+            story.add_content_element(second_paragraph, overwrite=True, duplicate=False)
+            # Will produce two paragraphs that all read "my second paragraph"
+            
+            story.add_content_element(second_paragraph, overwrite=False, duplicate=False)
+            # Will raise a ValueError
 
         :param content_element: The :class:`ContentElement` to add.
         :type content_element: :class:`ContentElement`
+        
+        :param overwrite: Determines whether a previously added :class:`ContentElement` with the same ``id`` will be replaced by the instance being added.
+        :type overwrite: bool
+        
+        :param duplicate: Determines whether to add a new instance of the :class:`ContentElement` if a previous one with the same ``id`` is already present.
+        :type duplicate: bool
         """
         if not isinstance(content_element, ContentElement):
             raise TypeError('content_element must be a ContentElement')
@@ -277,6 +291,10 @@ class Story(object):
 
         if not is_duplicating or (is_duplicating and duplicate is True):
             self._content_ids.append(content_element.id)
+        elif is_duplicating and overwrite is False and duplicate is False:
+            raise ValueError('content (id:{}) already exists, but both overwrite '
+                             .format(content_element.id) +
+                             'and duplicate are set to False')
 
     def get_content_element(self,
                             content_element_id,
